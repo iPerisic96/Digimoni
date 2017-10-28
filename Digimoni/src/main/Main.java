@@ -8,6 +8,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		GameFrame gf = new OpeningScreen("Digimoni", 1000, 800);
 		gf.initGameWindow();
+		System.out.println("Test");
 	}
 
 	
