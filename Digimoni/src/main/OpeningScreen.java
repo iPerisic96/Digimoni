@@ -13,6 +13,7 @@ public class OpeningScreen extends GameFrame
 		public float posX;
 		public float posY;
 		public float posZ;
+		public String broj;
 	}
 	
 	private static final int STAR_MAX = 1000;
@@ -37,10 +38,15 @@ public class OpeningScreen extends GameFrame
 			stars[i].posX = (float)(Math.random() * 2000.0) - 1000.0f;
 			stars[i].posY = (float)(Math.random() * 2000.0) - 1000.0f;
 			stars[i].posZ = (float)(Math.random() * MAX_Z);
+			if (Math.random() < 0.5) {
+				stars[i].broj = "0";
+			} else {
+				stars[i].broj = "1";
+			}
 		}
 		
 		for(int i = 0; i < 256; ++i)
-			grayscale[i] = new Color(i, i, i);
+			grayscale[i] = new Color(0, i, 0);
 		
 		startThread();
 	}
@@ -61,7 +67,8 @@ public class OpeningScreen extends GameFrame
 			int brightness = (int)(255 - (s.posZ / MAX_Z) * 255.0f);
 			g.setColor(grayscale[brightness]);
 			
-			g.drawLine((int)sX1, (int)sY1, (int)sX2, (int)sY2);
+			//g.drawLine((int)sX1, (int)sY1, (int)sX2, (int)sY2);
+			g.drawString(s.broj, sX1, sY1);
 		}
 		
 	}
