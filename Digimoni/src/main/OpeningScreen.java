@@ -1,6 +1,7 @@
 package main;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.IOException;
 
 import rafgfxlib.GameFrame;
 
@@ -91,7 +92,8 @@ public class OpeningScreen extends GameFrame
 	
 
 	@Override
-	public void handleMouseDown(int x, int y, GFMouseButton button) { }
+	public void handleMouseDown(int x, int y, GFMouseButton button){
+	}
 
 	@Override
 	public void handleWindowInit() { }
@@ -100,7 +102,9 @@ public class OpeningScreen extends GameFrame
 	public void handleWindowDestroy() { }
 	
 	@Override
-	public void handleMouseUp(int x, int y, GFMouseButton button) { }
+	public void handleMouseUp(int x, int y, GFMouseButton button){
+		
+	}
 
 	@Override
 	public void handleMouseMove(int x, int y) { }

@@ -6,11 +6,11 @@ public class SpriteMove {
 	
 	private int posinsheet;
 	private int lengthofmove;
-	private boolean doesmovehaveparticles;
+	private String doesmovehaveparticles;
 	private String mobilityofparticles;
 	private ArrayList<Sprite> sprites;
 	
-	public SpriteMove(int posinsheet, int lengthofmove, boolean doesmovehaveparticles, String mobilityofparticles,
+	public SpriteMove(int posinsheet, int lengthofmove, String doesmovehaveparticles, String mobilityofparticles,
 			ArrayList<Sprite> sprites) {
 		super();
 		this.posinsheet = posinsheet;
@@ -31,10 +31,10 @@ public class SpriteMove {
 	public void setLengthofmove(int lengthofmove) {
 		this.lengthofmove = lengthofmove;
 	}
-	public boolean isDoesmovehaveparticles() {
+	public String isDoesmovehaveparticles() {
 		return doesmovehaveparticles;
 	}
-	public void setDoesmovehaveparticles(boolean doesmovehaveparticles) {
+	public void setDoesmovehaveparticles(String doesmovehaveparticles) {
 		this.doesmovehaveparticles = doesmovehaveparticles;
 	}
 	public String getMobilityofparticles() {
