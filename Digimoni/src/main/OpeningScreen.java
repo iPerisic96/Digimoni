@@ -1,14 +1,25 @@
 package main;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
+
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+
 import java.io.IOException;
 
+
 import rafgfxlib.GameFrame;
+import rafgfxlib.Util;
 
 public class OpeningScreen extends GameFrame
 {
 	private static final long serialVersionUID = -7968395365237904502L;
+	
+	private static final int MAX_SPRITES = 2;
+	private BufferedImage[] partImages = new BufferedImage[MAX_SPRITES];
 
+	
 	public static class Star
 	{
 		public float posX;
@@ -16,6 +27,24 @@ public class OpeningScreen extends GameFrame
 		public float posZ;
 		public String broj;
 	}
+	
+	public static class Particle
+	{
+		public float posX;
+		public float posY;
+		public float dX;
+		public float dY;
+		public int life = 0;
+		public int lifeMax = 0;
+		public int imageID = 0;
+		public float angle = 0.0f;
+		public float rot = 0.0f;
+	}
+	
+	private static final int PARTICLE_MAX = 1000;
+	
+	private Particle[] parts = new Particle[PARTICLE_MAX];
+
 	
 	private static final int STAR_MAX = 1000;
 	
@@ -28,10 +57,15 @@ public class OpeningScreen extends GameFrame
 	
 	
 
-	protected OpeningScreen(String title, int sizeX, int sizeY)
+	public OpeningScreen(String title, int sizeX, int sizeY)
 	{
+ 
+		
 		super(title, sizeX, sizeY);
 		setUpdateRate(60);
+		
+
+
 		
 		for(int i = 0; i < STAR_MAX; ++i)
 		{
@@ -48,9 +82,20 @@ public class OpeningScreen extends GameFrame
 		
 		for(int i = 0; i < 256; ++i)
 			grayscale[i] = new Color(0, i, 0);
+
+		
+		for(int i = 0; i < PARTICLE_MAX; ++i)
+			parts[i] = new Particle();
+		
+		for(int i = 0; i < MAX_SPRITES; ++i)
+			partImages[i] = Util.loadImage("slike/broj" + i + ".png");
+		
+
 		
 		startThread();
 	}
+	
+
 	
 	
 
@@ -70,6 +115,27 @@ public class OpeningScreen extends GameFrame
 			
 			//g.drawLine((int)sX1, (int)sY1, (int)sX2, (int)sY2);
 			g.drawString(s.broj, sX1, sY1);
+
+			
+		}
+		
+		
+		AffineTransform transform = new AffineTransform();
+		
+		for(Particle p : parts)
+		{
+			if(p.life <= 0) continue;
+			
+			transform.setToIdentity();
+			transform.translate(p.posX, p.posY);
+			transform.rotate(p.angle);
+			transform.translate(-16.0, -16.0);
+			
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                    (float)p.life / (float)p.lifeMax));
+
+			g.drawImage(partImages[p.imageID], transform, null);
+
 		}
 		
 	}
@@ -87,12 +153,58 @@ public class OpeningScreen extends GameFrame
 				s.posY = (float)(Math.random() * 2000.0) - 1000.0f;
 			}
 		}
+		
+		
+		if(isMouseButtonDown(GFMouseButton.Right))
+			genEx(getMouseX(), getMouseY(), 3.0f, 200, 2);
+		
+		for(Particle p : parts)
+		{
+			if(p.life <= 0) continue;
+			
+			p.life--;
+			p.posX += p.dX;
+			p.posY += p.dY;
+			p.dX *= 0.99f;
+			p.dY *= 0.99f;
+			p.dY += 0.1f;
+			p.angle += p.rot;
+			p.rot *= 0.99f;
+		}
 	}
+	
+	private void genEx(float cX, float cY, float radius, int life, int count)
+	{
+		for(Particle p : parts)
+		{
+			if(p.life <= 0)
+			{
+				p.life = p.lifeMax = (int)(Math.random() * life * 0.5) + life / 2;
+				p.posX = cX;
+				p.posY = cY;
+				double angle = Math.random() * Math.PI * 2.0;
+				double speed = Math.random() * radius;
+				p.dX = (float)(Math.cos(angle) * speed);
+				p.dY = (float)(Math.sin(angle) * speed);
+				p.angle = (float)(Math.random() * Math.PI * 2.0);
+				p.rot = (float)(Math.random() - 0.5) * 0.3f;
+				
+				p.imageID = (int)(Math.random() * MAX_SPRITES);
+				
+				count--;
+				if(count <= 0) return;
+			}
+		}
+	}
+	
+	
 	
 	
 
 	@Override
-	public void handleMouseDown(int x, int y, GFMouseButton button){
+
+	public void handleMouseDown(int x, int y, GFMouseButton button) {
+		genEx(x, y, 10.0f, 300, 50);
 	}
 
 	@Override
