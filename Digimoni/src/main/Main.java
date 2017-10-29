@@ -9,6 +9,7 @@ public class Main {
 		GameFrame gf = new OpeningScreen("Digimoni", 1000, 800);
 		gf.initGameWindow();
 		System.out.println("Test");
+		
 	}
 
 	
