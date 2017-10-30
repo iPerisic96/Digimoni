@@ -19,6 +19,7 @@ public class OpeningScreen extends GameFrame
 	private static final int MAX_SPRITES = 2;
 	private BufferedImage[] partImages = new BufferedImage[MAX_SPRITES];
 
+	MenuButton button;
 	
 	public static class Star
 	{
@@ -65,6 +66,7 @@ public class OpeningScreen extends GameFrame
 		setUpdateRate(60);
 		
 
+		button = new MenuButton(45, 60, 100, 100, Color.CYAN, "start");
 
 		
 		for(int i = 0; i < STAR_MAX; ++i)
@@ -102,6 +104,7 @@ public class OpeningScreen extends GameFrame
 	@Override
 	public void render(Graphics2D g, int sw, int sh)
 	{	
+		button.render(g, sw, sh);
 		for(Star s : stars)
 		{	
 			float sX1 = sw / 2 + s.posX * (400.0f / s.posZ);
@@ -137,6 +140,8 @@ public class OpeningScreen extends GameFrame
 			g.drawImage(partImages[p.imageID], transform, null);
 
 		}
+		//g.setColor(null);
+		button.render(g, sw, sh);
 		
 	}
 
@@ -171,6 +176,8 @@ public class OpeningScreen extends GameFrame
 			p.angle += p.rot;
 			p.rot *= 0.99f;
 		}
+		
+		button.update(getMouseX(), getMouseY());
 	}
 	
 	private void genEx(float cX, float cY, float radius, int life, int count)
