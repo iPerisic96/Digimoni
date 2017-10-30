@@ -7,7 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import java.io.IOException;
-
+import java.util.ArrayList;
 
 import rafgfxlib.GameFrame;
 import rafgfxlib.Util;
@@ -20,6 +20,7 @@ public class OpeningScreen extends GameFrame
 	private BufferedImage[] partImages = new BufferedImage[MAX_SPRITES];
 
 	MenuButton button;
+	ArrayList<MenuButton> buttons= new ArrayList<>();
 	
 	public static class Star
 	{
@@ -66,8 +67,10 @@ public class OpeningScreen extends GameFrame
 		setUpdateRate(60);
 		
 
+		
 		button = new MenuButton(45, 60, 100, 100, Color.CYAN, "start");
 
+		buttons.add(button);
 		
 		for(int i = 0; i < STAR_MAX; ++i)
 		{
@@ -141,7 +144,9 @@ public class OpeningScreen extends GameFrame
 
 		}
 		//g.setColor(null);
-		button.render(g, sw, sh);
+		for(MenuButton b : buttons){
+			b.render(g, sw, sh);
+		}
 		
 	}
 
@@ -176,8 +181,10 @@ public class OpeningScreen extends GameFrame
 			p.angle += p.rot;
 			p.rot *= 0.99f;
 		}
+		for(MenuButton b : buttons){
+			b.update(getMouseX(), getMouseY());
+		}
 		
-		button.update(getMouseX(), getMouseY());
 	}
 	
 	private void genEx(float cX, float cY, float radius, int life, int count)
