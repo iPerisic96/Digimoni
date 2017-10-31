@@ -18,7 +18,7 @@ public class MenuButton {
 		this.height = height;
 		this.width = wight;
 		this.boja = boja;
-		this.tekst = "Start";
+		this.tekst = tekst;
 	}
 
 	public void render(Graphics2D g, int sw, int sh)

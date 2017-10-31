@@ -19,7 +19,10 @@ public class OpeningScreen extends GameFrame
 	private static final int MAX_SPRITES = 2;
 	private BufferedImage[] partImages = new BufferedImage[MAX_SPRITES];
 
-	MenuButton button;
+	MenuButton start;
+	MenuButton controls;
+	MenuButton credits;
+	MenuButton exit;
 	ArrayList<MenuButton> buttons= new ArrayList<>();
 	
 	public static class Star
@@ -68,9 +71,17 @@ public class OpeningScreen extends GameFrame
 		
 
 		
-		button = new MenuButton(45, 60, 100, 100, Color.CYAN, "start");
-
-		buttons.add(button);
+		start = new MenuButton(450, 200, 50, 100, Color.CYAN, "start");
+		buttons.add(start);
+		
+		controls = new MenuButton(450, 300, 50, 100, Color.CYAN, "Controls");
+		buttons.add(controls);
+		
+		credits = new MenuButton(450, 400, 50, 100, Color.CYAN, "Credits");
+		buttons.add(credits);
+		
+		exit= new MenuButton(450, 500, 50, 100, Color.CYAN, "Exit");
+		buttons.add(exit);
 		
 		for(int i = 0; i < STAR_MAX; ++i)
 		{
@@ -107,7 +118,7 @@ public class OpeningScreen extends GameFrame
 	@Override
 	public void render(Graphics2D g, int sw, int sh)
 	{	
-		button.render(g, sw, sh);
+		//button.render(g, sw, sh);
 		for(Star s : stars)
 		{	
 			float sX1 = sw / 2 + s.posX * (400.0f / s.posZ);
@@ -212,13 +223,25 @@ public class OpeningScreen extends GameFrame
 	}
 	
 	
-	
+	 
 	
 
 	@Override
 
 	public void handleMouseDown(int x, int y, GFMouseButton button) {
 		genEx(x, y, 10.0f, 300, 50);
+		GameFrame gFrame;
+		try {
+			gFrame = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombined.png");
+			
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
