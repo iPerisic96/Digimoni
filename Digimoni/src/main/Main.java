@@ -11,7 +11,7 @@ public class Main {
 		
 		/*GameFrame gf = new OpeningScreen("Digimoni", 1000, 800);
 		gf.initGameWindow();*/
-		GameFrame gFrame = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombinedTest.png");
+		GameFrame gFrame = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombined.png");
 		gFrame.initGameWindow();
 	}
 

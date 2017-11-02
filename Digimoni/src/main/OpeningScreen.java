@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.sun.glass.ui.TouchInputSupport;
+
 import rafgfxlib.GameFrame;
 import rafgfxlib.Util;
 
