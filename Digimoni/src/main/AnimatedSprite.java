@@ -8,7 +8,7 @@ import java.io.IOException;
 import rafgfxlib.GameFrame;
 import rafgfxlib.GameFrame.GFMouseButton;
 
-public class AnimatedSprite extends GameFrame{
+public class AnimatedSprite{
 	/**
 	 * 
 	 */
@@ -48,9 +48,9 @@ public class AnimatedSprite extends GameFrame{
 	
 	public AnimatedSprite(String firstPlayerSpriteSheet) throws NumberFormatException, IOException{
 		
-		super("PrimerPozadine", 640, 480);
+		//super("PrimerPozadine", 640, 480);
 		
-		setUpdateRate(60);
+		//setUpdateRate(60);
 		
 		spriteSheet = new SpriteSheet(firstPlayerSpriteSheet, 10, 30);
 		spriteSheet.setOffsets(50, 50);
@@ -58,18 +58,18 @@ public class AnimatedSprite extends GameFrame{
 		player = new Animation(spriteSheet, 320, 320);
 		
 		player.play();
-		startThread();
+		//startThread();
 	}
 
-	@Override
-	public void handleWindowInit(){
+	
+	//public void handleWindowInit(){
 		
-	}
+	//}
 
-	@Override
-	public void handleWindowDestroy(){
+	
+	//public void handleWindowDestroy(){
 		
-	}
+	//}
 	
 	public void lastKeyPressed(int currentKey){
 		if(lastKey==-1 || lastKey!=currentKey){
@@ -77,7 +77,7 @@ public class AnimatedSprite extends GameFrame{
 		}
 	}
 	
-	@Override
+	
 	public void render(Graphics2D g, int sw, int sh){
 		
 		g.setBackground(backgroundColor);
@@ -88,34 +88,34 @@ public class AnimatedSprite extends GameFrame{
 	
 	
 	
-	@Override
-	public void update() {	
+	
+	public void update(boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
 		
-		if(isKeyDown(KeyEvent.VK_RIGHT)){
+		if(right){
 			player.move(PLAYER_SPEED, 0);
 			player.update(RUN);
 		}
-		else if(isKeyDown(KeyEvent.VK_LEFT)){
+		else if(left){
 			player.move(-PLAYER_SPEED, 0);
 			player.update(WALK);
 		}
-		else if(isKeyDown(KeyEvent.VK_DOWN)){
+		else if(down){
 			player.move(0, 0);
 			player.update(GUARD);
 		}
-		else if(isKeyDown(KeyEvent.VK_UP)){
+		else if(up){
 			//NEEDS FIXING
 			player.move(0, -PLAYER_SPEED);
 			player.update(JUMP);
 		}
-		else if(isKeyDown(KeyEvent.KEY_PRESSED)==false){
+		else if(pressed==false){
 			player.move(0,0);
 			player.update(IDLE);
 		}
 		
 	}
 
-	@Override
+	/*@Override
 	public void handleMouseDown(int x, int y, GFMouseButton button) { }
 
 	@Override
@@ -124,9 +124,11 @@ public class AnimatedSprite extends GameFrame{
 	@Override
 	public void handleMouseMove(int x, int y) { }
 
-	@Override
+*/
+	//@Override
 	public void handleKeyDown(int keyCode) 
-	{ 	
+	{ 
+		
 		if(keyCode == KeyEvent.VK_UP){
 			if(keyCode!=lastKey){
 				player.setFrame(0, JUMP);
@@ -167,7 +169,7 @@ public class AnimatedSprite extends GameFrame{
 		
 	}
 	
-	@Override
+	//@Override
 	public void handleKeyUp(int keyCode) 
 	{ 
 		if(keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_UP ||

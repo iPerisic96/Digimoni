@@ -2,7 +2,7 @@ package main;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
-
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
@@ -26,6 +26,12 @@ public class OpeningScreen extends GameFrame
 	MenuButton credits;
 	MenuButton exit;
 	ArrayList<MenuButton> buttons= new ArrayList<>();
+	boolean startb=false;
+	AnimatedSprite animatedSprite;
+	int startx=450;
+	int starty=200;
+	int startw=50;
+	int starth=100;
 	
 	public static class Star
 	{
@@ -72,6 +78,12 @@ public class OpeningScreen extends GameFrame
 		setUpdateRate(60);
 		
 
+		try {
+			animatedSprite  = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombined.png");
+		} catch (NumberFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		start = new MenuButton(450, 200, 50, 100, Color.CYAN, "start");
 		buttons.add(start);
@@ -120,6 +132,9 @@ public class OpeningScreen extends GameFrame
 	@Override
 	public void render(Graphics2D g, int sw, int sh)
 	{	
+		if(startb){
+			animatedSprite.render(g, sw, sh); return;
+		}
 		//button.render(g, sw, sh);
 		for(Star s : stars)
 		{	
@@ -166,6 +181,9 @@ public class OpeningScreen extends GameFrame
 	@Override
 	public void update()
 	{	
+		if(startb){
+			animatedSprite.update(isKeyDown(KeyEvent.VK_RIGHT), isKeyDown(KeyEvent.VK_LEFT), isKeyDown(KeyEvent.VK_DOWN), isKeyDown(KeyEvent.VK_UP), isKeyDown(KeyEvent.KEY_PRESSED));
+		}
 		for(Star s : stars)
 		{
 			s.posZ -= speed;
@@ -232,7 +250,7 @@ public class OpeningScreen extends GameFrame
 
 	public void handleMouseDown(int x, int y, GFMouseButton button) {
 		genEx(x, y, 10.0f, 300, 50);
-		GameFrame gFrame;
+		/*GameFrame gFrame;
 		try {
 			gFrame = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombined.png");
 			
@@ -242,10 +260,10 @@ public class OpeningScreen extends GameFrame
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
-
+	
 	@Override
 	public void handleWindowInit() { }
 
@@ -254,16 +272,28 @@ public class OpeningScreen extends GameFrame
 	
 	@Override
 	public void handleMouseUp(int x, int y, GFMouseButton button){
-		
+		if (startb==false){
+			if(x>startx && x<(startx+startw) && y>starty && y<(starty+starth)){
+				startb=true;
+			}
+		}
 	}
 
 	@Override
 	public void handleMouseMove(int x, int y) { }
 
 	@Override
-	public void handleKeyDown(int keyCode) { }
+	public void handleKeyDown(int keyCode) {
+		if(startb){
+			animatedSprite.handleKeyDown(keyCode);
+		}
+	}
 
 	@Override
-	public void handleKeyUp(int keyCode) { }
+	public void handleKeyUp(int keyCode) { 
+		if(startb){
+			animatedSprite.handleKeyUp(keyCode);
+		}
+	}
 
 }
