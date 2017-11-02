@@ -16,7 +16,7 @@ public class Animation {
 	private int animationID = 0;
 	private int animFrame = 0;
 	private boolean animPlaying = false;
-	private int frameInterval = 2;
+	private int frameInterval = 5;
 	private int frameCountdown=0;
 	private int currentMove;
 	
@@ -36,14 +36,14 @@ public class Animation {
 		ArrayList<SpriteMove> methodSpriteMoves = new ArrayList<>();
 		if(sheet.getSheetName().equals("SpriteSheets/GatomonSpriteSheetCombined.png")){
 			BufferedReader bReader = new BufferedReader(new FileReader(new File("SpriteInfo/GatomonMoves.txt")));
-			String line;			for(int i=0;i<1;i++){
+			
+			String line;
+			for(int i=0;i<18;i++){
 				if((line = bReader.readLine())!=null){
 					System.out.println(line);
 					ArrayList<Sprite> movesprites=new ArrayList<>();
 					String[]linijafajla=line.split(";");
-					/*methodSpriteMoves.get(i).setPosinsheet(Integer.parseInt(linijafajla[0]));
-					methodSpriteMoves.get(i).setLengthofmove(Integer.parseInt(linijafajla[1]));
-					methodSpriteMoves.get(i).setDoesmovehaveparticles(linijafajla[2]);*/
+					
 					String[]pikselisprajtova=linijafajla[3].split(",");
 					for(int j=0;j<pikselisprajtova.length;j++){
 						String[]pojedinacnipikseli=pikselisprajtova[j].split("x");
@@ -52,21 +52,15 @@ public class Animation {
 					}
 					SpriteMove thismethodSpriteMove= new SpriteMove(Integer.parseInt(linijafajla[0]), Integer.parseInt(linijafajla[1]), linijafajla[2], linijafajla[4], movesprites);
 					methodSpriteMoves.add(thismethodSpriteMove);
-					/*methodSpriteMoves.get(i).setSprites(movesprites);
-					methodSpriteMoves.get(i).setMobilityofparticles(linijafajla[4]);*/
 				}
 				else{
 					System.out.println("Fajl ima manje linija nego predvidjeno");
 					return null;
 				}
-				
 			}
+		}
 			
 			System.out.println(methodSpriteMoves.get(0).getSprites().size());
-		}
-		else{
-			System.out.println("Ne postoji SpriteSheet. "+sheet.getSheetName());
-		}
 		return methodSpriteMoves;
 		
 	}
@@ -79,6 +73,7 @@ public class Animation {
 		mySheet = sheet;
 		spriteMoves=allocateMoves(sheet);
 		currentMove=0;
+		
 
 	}
 	
@@ -105,6 +100,7 @@ public class Animation {
 	
 	public void setAnimation(int anim){
 		if(anim >= 0 && anim < mySheet.getRowCount())
+			System.out.println("ANIMATIONID NUMBER: "+anim);
 			animationID = anim;
 	}
 	
@@ -112,8 +108,8 @@ public class Animation {
 		return animFrame; 
 	}
 	
-	public void setFrame(int frame){
-		if(frame >= 0 && frame < mySheet.getColumnCount())
+	public void setFrame(int frame, int move){
+		if(frame >= 0 && frame < spriteMoves.get(move).getLengthofmove())
 			animFrame = frame;
 	}
 	

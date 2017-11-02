@@ -9,6 +9,10 @@ import rafgfxlib.GameFrame;
 import rafgfxlib.GameFrame.GFMouseButton;
 
 public class AnimatedSprite extends GameFrame{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8422877228138274014L;
 	private SpriteSheet spriteSheet;
 	private Animation player;
 	private Color backgroundColor = new Color(32, 64, 0);
@@ -17,20 +21,20 @@ public class AnimatedSprite extends GameFrame{
 	private static final int WALK = 1;
 	private static final int RUN = 2;
 	private static final int STOP = 3;
-	private static final int JUMP = 4;
-	private static final int GUARD = 5;
-	private static final int GUARDINAIR = 6;
-	private static final int HURT = 7;
-	private static final int KNOCKBACK = 8;
-	private static final int ENERGYCHANNEL = 9;
-	private static final int LIGHTATTACK = 10;
-	private static final int HEAVYATTACK = 11;
-	private static final int SPECIAL = 12;
-	private static final int ULTIMATE = 13;
-	private static final int TAUNT = 14;
-	private static final int WIN = 15;
-	private static final int LOSE = 16;
-	private static final int THROW = 17;
+	private static final int GUARD = 4;
+	private static final int GUARDINAIR = 5;
+	private static final int HURT = 6;
+	private static final int KNOCKBACK = 7;
+	private static final int ENERGYCHANNEL = 8;
+	private static final int LIGHTATTACK = 9;
+	private static final int HEAVYATTACK = 10;
+	private static final int SPECIAL = 11;
+	private static final int ULTIMATE = 12;
+	private static final int TAUNT = 13;
+	private static final int WIN = 14;
+	private static final int LOSE = 15;
+	private static final int THROW = 16;
+	private static final int JUMP = 17;
 	
 	private static final int ANIM_DOWN = 0;
 	private static final int ANIM_LEFT = 1;
@@ -39,6 +43,8 @@ public class AnimatedSprite extends GameFrame{
 	
 	private static final int PLAYER_SPEED = 3;
 	
+    private static int lastKey = -1;
+
 	
 	public AnimatedSprite(String firstPlayerSpriteSheet) throws NumberFormatException, IOException{
 		
@@ -51,7 +57,7 @@ public class AnimatedSprite extends GameFrame{
 		
 		player = new Animation(spriteSheet, 320, 320);
 		
-		
+		player.play();
 		startThread();
 	}
 
@@ -64,7 +70,13 @@ public class AnimatedSprite extends GameFrame{
 	public void handleWindowDestroy(){
 		
 	}
-
+	
+	public void lastKeyPressed(int currentKey){
+		if(lastKey==-1 || lastKey!=currentKey){
+			lastKey=currentKey;
+		}
+	}
+	
 	@Override
 	public void render(Graphics2D g, int sw, int sh){
 		
@@ -73,24 +85,34 @@ public class AnimatedSprite extends GameFrame{
 		
 		player.draw(g);
 	}
-
+	
+	
+	
 	@Override
 	public void update() {	
 		
-		if(!isKeyDown(KeyEvent.KEY_PRESSED)){
+		if(isKeyDown(KeyEvent.VK_RIGHT)){
+			player.move(PLAYER_SPEED, 0);
+			player.update(RUN);
+		}
+		else if(isKeyDown(KeyEvent.VK_LEFT)){
+			player.move(-PLAYER_SPEED, 0);
+			player.update(WALK);
+		}
+		else if(isKeyDown(KeyEvent.VK_DOWN)){
+			player.move(0, 0);
+			player.update(GUARD);
+		}
+		else if(isKeyDown(KeyEvent.VK_UP)){
+			//NEEDS FIXING
+			player.move(0, -PLAYER_SPEED);
+			player.update(JUMP);
+		}
+		else if(isKeyDown(KeyEvent.KEY_PRESSED)==false){
 			player.move(0,0);
 			player.update(IDLE);
 		}
-		/*else if(isKeyDown(KeyEvent.VK_DOWN))
-			player.move(0, PLAYER_SPEED);
-		else if(isKeyDown(KeyEvent.VK_UP))
-			player.move(0, -PLAYER_SPEED);
-		else if(isKeyDown(KeyEvent.VK_LEFT))
-			player.move(-PLAYER_SPEED, 0);
-		else if(isKeyDown(KeyEvent.VK_RIGHT))
-			player.move(PLAYER_SPEED, 0);
 		
-		player.update();*/
 	}
 
 	@Override
@@ -104,18 +126,43 @@ public class AnimatedSprite extends GameFrame{
 
 	@Override
 	public void handleKeyDown(int keyCode) 
-	{ 		
+	{ 	
 		if(keyCode == KeyEvent.VK_UP){
-			player.setAnimation(ANIM_UP);
+			if(keyCode!=lastKey){
+				player.setFrame(0, JUMP);
+				lastKeyPressed(keyCode);
+			}
+			player.setAnimation(player.getSpriteMoves().get(JUMP).getPosinsheet());
 			player.play();
+
 		}
 		else if(keyCode == KeyEvent.VK_LEFT){
-			player.setAnimation(ANIM_LEFT);
+			if(keyCode!=lastKey){
+				player.setFrame(0, WALK);
+				lastKeyPressed(keyCode);
+			}
+			player.setAnimation(player.getSpriteMoves().get(WALK).getPosinsheet());
 			player.play();
+
 		}
 		else if(keyCode == KeyEvent.VK_RIGHT){
-			player.setAnimation(ANIM_RIGHT);
+			if(keyCode!=lastKey){
+				player.setFrame(0, RUN);
+				lastKeyPressed(keyCode);
+			}
+			player.setAnimation(player.getSpriteMoves().get(RUN).getPosinsheet());
 			player.play();
+
+		}
+		else if(keyCode == KeyEvent.VK_DOWN){
+			if(keyCode!=lastKey){
+				player.setFrame(0, GUARD);
+				lastKeyPressed(keyCode);
+			}
+			player.setAnimation(player.getSpriteMoves().get(GUARD).getPosinsheet());
+			player.play();		
+
+
 		}
 		
 	}
@@ -126,10 +173,11 @@ public class AnimatedSprite extends GameFrame{
 		if(keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_UP ||
 				keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT)
 		{
+			lastKey=-1;
 			player.stop();
 			player.setAnimation(player.getSpriteMoves().get(IDLE).getPosinsheet());
 			player.play();
-			player.setFrame(5);
+			player.setFrame(0,IDLE);
 		}
 	}
 }

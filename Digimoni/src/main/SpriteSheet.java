@@ -55,10 +55,11 @@ public class SpriteSheet {
 		
 		if(sheet == null) return;
 		if(frameX < 0 || frameY < 0 || frameY >= sheetH) return;
-		int destcornerx=frameW-spriteMove.getSprites().get(frameX).getPxwidth()/2;
+		//Ovde treba poraditi
+		/*int destcornerx=frameW-spriteMove.getSprites().get(frameX).getPxwidth()/2;
 		if(destcornerx%2!=0)destcornerx++;
 		int destcornery=frameH-spriteMove.getSprites().get(frameX).getPxheight()/2;
-		if(destcornery%2!=0)destcornery++;
+		if(destcornery%2!=0)destcornery++;*/
 		if(frameX>9){
 			frameX=frameX%10;
 			frameY++;
