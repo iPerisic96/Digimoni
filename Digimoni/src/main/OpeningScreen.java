@@ -183,7 +183,9 @@ public class OpeningScreen extends GameFrame
 	{	
 		if(startb){
 			animatedSprite.update(isKeyDown(KeyEvent.VK_RIGHT), isKeyDown(KeyEvent.VK_LEFT), isKeyDown(KeyEvent.VK_DOWN), isKeyDown(KeyEvent.VK_UP), isKeyDown(KeyEvent.KEY_PRESSED));
+			return;
 		}
+		
 		for(Star s : stars)
 		{
 			s.posZ -= speed;
