@@ -25,13 +25,25 @@ public class OpeningScreen extends GameFrame
 	MenuButton controls;
 	MenuButton credits;
 	MenuButton exit;
+	MenuButton back;
 	ArrayList<MenuButton> buttons= new ArrayList<>();
 	boolean startb=false;
 	AnimatedSprite animatedSprite;
-	int startx=450;
-	int starty=200;
-	int startw=50;
-	int starth=100;
+	BufferedImage starth = Util.loadImage("dugmad/start1.png");
+	BufferedImage controlsh = Util.loadImage("dugmad/controls1.png");
+	BufferedImage creditsh= Util.loadImage("dugmad/credits1.png");
+	BufferedImage exith = Util.loadImage("dugmad/exit1.png");
+	BufferedImage backh = Util.loadImage("dugmad/back1.png");
+	BufferedImage startn = Util.loadImage("dugmad/start.png");
+	BufferedImage controlsn = Util.loadImage("dugmad/controls.png");
+	BufferedImage creditsn = Util.loadImage("dugmad/credits.png");
+	BufferedImage exitn= Util.loadImage("dugmad/exit.png");
+	BufferedImage backn= Util.loadImage("dugmad/back.png");
+	
+	BufferedImage zekice = Util.loadImage("maxresdefault.jpg");
+	
+	boolean backb=false;
+	
 	
 	public static class Star
 	{
@@ -85,17 +97,19 @@ public class OpeningScreen extends GameFrame
 			e.printStackTrace();
 		}
 		
-		start = new MenuButton(450, 200, 50, 100, Color.CYAN, "start");
+		start = new MenuButton(450, 200, starth, startn );
 		buttons.add(start);
 		
-		controls = new MenuButton(450, 300, 50, 100, Color.CYAN, "Controls");
+		controls = new MenuButton(450, 300, controlsh, controlsn);
 		buttons.add(controls);
 		
-		credits = new MenuButton(450, 400, 50, 100, Color.CYAN, "Credits");
+		credits = new MenuButton(450, 400, creditsh, creditsn);
 		buttons.add(credits);
 		
-		exit= new MenuButton(450, 500, 50, 100, Color.CYAN, "Exit");
+		exit= new MenuButton(450, 500, exith, exitn);
 		buttons.add(exit);
+		
+		back = new MenuButton(100, 100, backh, backn);
 		
 		for(int i = 0; i < STAR_MAX; ++i)
 		{
@@ -171,10 +185,18 @@ public class OpeningScreen extends GameFrame
 			g.drawImage(partImages[p.imageID], transform, null);
 
 		}
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                1f));
 		//g.setColor(null);
-		for(MenuButton b : buttons){
-			b.render(g, sw, sh);
+		if(!backb){
+			for(MenuButton b : buttons){
+				b.render(g, sw, sh);
+			}
+		}else{
+			back.render(g, sw, sh);
+			g.drawImage(zekice, 200, 200,500, 500, null);
 		}
+		
 		
 	}
 
@@ -214,9 +236,16 @@ public class OpeningScreen extends GameFrame
 			p.angle += p.rot;
 			p.rot *= 0.99f;
 		}
-		for(MenuButton b : buttons){
-			b.update(getMouseX(), getMouseY());
+		if(!backb){
+			for(MenuButton b : buttons){
+				b.update(getMouseX(), getMouseY());
+			}
+				
+			
+		}else{
+			back.update(getMouseX(), getMouseY());
 		}
+		
 		
 	}
 	
@@ -275,8 +304,19 @@ public class OpeningScreen extends GameFrame
 	@Override
 	public void handleMouseUp(int x, int y, GFMouseButton button){
 		if (startb==false){
-			if(x>startx && x<(startx+startw) && y>starty && y<(starty+starth)){
+			if(x>start.x && x<(start.x+start.image.getWidth()) && y>start.y && y<(start.y+start.image.getHeight())){
 				startb=true;
+			}
+		}
+		
+		if(backb==false){
+			if(x>controls.x && x<(controls.x+controls.image.getWidth()) && y>controls.y && y<(controls.y+controls.image.getHeight())){
+				backb=true;
+			}
+		}
+		if(backb==true){
+			if(x>back.x && x<(back.x+back.image.getWidth()) && y>back.y && y<(back.y+back.image.getHeight())){
+				backb=false;
 			}
 		}
 	}
