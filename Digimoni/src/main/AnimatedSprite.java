@@ -5,8 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-import rafgfxlib.GameFrame;
-import rafgfxlib.GameFrame.GFMouseButton;
 
 public class AnimatedSprite{
 	/**
@@ -55,7 +53,7 @@ public class AnimatedSprite{
 		spriteSheet = new SpriteSheet(firstPlayerSpriteSheet, 10, 30);
 		spriteSheet.setOffsets(50, 50);
 		
-		player = new Animation(spriteSheet, 320, 320);
+		player = new Animation(spriteSheet, "Gatomon",1500, 1000, 320, 320);
 		
 		player.play();
 		//startThread();

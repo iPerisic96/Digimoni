@@ -4,21 +4,34 @@ import java.util.ArrayList;
 
 public class SpriteMove {
 	
+	private int movedmg;
 	private int posinsheet;
 	private int lengthofmove;
 	private String doesmovehaveparticles;
 	private String mobilityofparticles;
 	private ArrayList<Sprite> sprites;
 	
-	public SpriteMove(int posinsheet, int lengthofmove, String doesmovehaveparticles, String mobilityofparticles,
+	public SpriteMove(int movedmg, int posinsheet, int lengthofmove, String doesmovehaveparticles, String mobilityofparticles,
 			ArrayList<Sprite> sprites) {
 		super();
+		this.movedmg = movedmg;
 		this.posinsheet = posinsheet;
 		this.lengthofmove = lengthofmove;
 		this.doesmovehaveparticles = doesmovehaveparticles;
 		this.mobilityofparticles = mobilityofparticles;
 		this.sprites = sprites;
 	}
+	
+	
+	
+	public int getMovedmg() {
+		return movedmg;
+	}
+
+	public void setMovedmg(int movedmg) {
+		this.movedmg = movedmg;
+	}
+
 	public int getPosinsheet() {
 		return posinsheet;
 	}
@@ -31,7 +44,7 @@ public class SpriteMove {
 	public void setLengthofmove(int lengthofmove) {
 		this.lengthofmove = lengthofmove;
 	}
-	public String isDoesmovehaveparticles() {
+	public String getDoesmovehaveparticles() {
 		return doesmovehaveparticles;
 	}
 	public void setDoesmovehaveparticles(String doesmovehaveparticles) {
