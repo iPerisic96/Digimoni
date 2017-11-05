@@ -92,7 +92,7 @@ public class OpeningScreen extends GameFrame
 		
 
 		try {
-			animatedSprite  = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombined.png");
+			animatedSprite  = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombined.png","SpriteSheets/GabumonSpriteSheet.png");
 		} catch (NumberFormatException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -207,7 +207,7 @@ public class OpeningScreen extends GameFrame
 	public void update()
 	{	
 		if(startb){
-			animatedSprite.update(isKeyDown(KeyEvent.VK_RIGHT), isKeyDown(KeyEvent.VK_LEFT), isKeyDown(KeyEvent.VK_DOWN), isKeyDown(KeyEvent.VK_UP), isKeyDown(KeyEvent.KEY_PRESSED));
+			animatedSprite.update(isKeyDown(KeyEvent.VK_D),isKeyDown(KeyEvent.VK_A),isKeyDown(KeyEvent.VK_S),isKeyDown(KeyEvent.VK_W),isKeyDown(KeyEvent.VK_RIGHT), isKeyDown(KeyEvent.VK_LEFT), isKeyDown(KeyEvent.VK_DOWN), isKeyDown(KeyEvent.VK_UP), isKeyDown(KeyEvent.KEY_PRESSED));
 			return;
 		}
 		
