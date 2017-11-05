@@ -9,8 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.sun.glass.ui.TouchInputSupport;
-
 import rafgfxlib.GameFrame;
 import rafgfxlib.Util;
 
@@ -98,16 +96,16 @@ public class OpeningScreen extends GameFrame
 			e.printStackTrace();
 		}
 		
-		start = new MenuButton(450, 200, starth, startn );
+		start = new MenuButton(400, 200, starth, startn );
 		buttons.add(start);
 		
-		controls = new MenuButton(450, 300, controlsh, controlsn);
+		controls = new MenuButton(400, 300, controlsh, controlsn);
 		buttons.add(controls);
 		
-		credits = new MenuButton(450, 400, creditsh, creditsn);
+		credits = new MenuButton(400, 400, creditsh, creditsn);
 		buttons.add(credits);
 		
-		exit= new MenuButton(450, 500, exith, exitn);
+		exit= new MenuButton(400, 500, exith, exitn);
 		buttons.add(exit);
 		
 		back = new MenuButton(100, 100, backh, backn);
