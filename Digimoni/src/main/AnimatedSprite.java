@@ -3,7 +3,10 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+
+import rafgfxlib.Util;
 
 
 public class AnimatedSprite{
@@ -14,7 +17,12 @@ public class AnimatedSprite{
 	private SpriteSheet spriteSheet2;
 	private Animation player1;
 	private Animation player2;
-	private Color backgroundColor = new Color(32, 64, 0);
+	private Color backgroundColor = new Color(92, 198, 237);//32,64,0
+	
+	private BufferedImage cloud = null;
+	private BufferedImage village = null;
+	
+	private BufferedImage platform = null;
 	
 	private static final int IDLE = 0;
 	private static final int WALK = 1;
@@ -46,6 +54,10 @@ public class AnimatedSprite{
 		//super("PrimerPozadine", 640, 480);
 		
 		//setUpdateRate(60);
+		
+		cloud = Util.loadImage("clouds/Cloud1.png");
+		village = Util.loadImage("village.png");
+		platform = Util.loadImage("tile.png");
 		
 		spriteSheet1 = new SpriteSheet(firstPlayerSpriteSheet, 10, 30);
 		spriteSheet1.setOffsets(50, 50);
@@ -83,6 +95,14 @@ public class AnimatedSprite{
 		g.setBackground(backgroundColor);
 		g.clearRect(0, 0, sw, sh);
 		
+		g.drawImage(cloud, 0, 50, null);
+		
+		for (int x = 1; x <= sw; x++){
+			g.drawImage(platform, sw - x * (platform.getWidth()-1), sh-platform.getHeight(),  null);
+		}
+		for (int y = 1; y <= sw; y++){
+			g.drawImage(village, sw - y*(village.getWidth()), sh-village.getHeight()-platform.getHeight(), null);
+		}
 		player1.draw(g);
 		player2.draw(g);
 	}
