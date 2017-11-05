@@ -205,7 +205,7 @@ public class OpeningScreen extends GameFrame
 	public void update()
 	{	
 		if(startb){
-			animatedSprite.update(isKeyDown(KeyEvent.VK_D),isKeyDown(KeyEvent.VK_A),isKeyDown(KeyEvent.VK_S),isKeyDown(KeyEvent.VK_W),isKeyDown(KeyEvent.VK_RIGHT), isKeyDown(KeyEvent.VK_LEFT), isKeyDown(KeyEvent.VK_DOWN), isKeyDown(KeyEvent.VK_UP), isKeyDown(KeyEvent.KEY_PRESSED));
+			animatedSprite.update(isKeyDown(KeyEvent.VK_H),isKeyDown(KeyEvent.VK_C),isKeyDown(KeyEvent.VK_V),isKeyDown(KeyEvent.VK_F),isKeyDown(KeyEvent.VK_G),isKeyDown(KeyEvent.VK_E),isKeyDown(KeyEvent.VK_L),isKeyDown(KeyEvent.VK_SLASH),isKeyDown(KeyEvent.VK_PERIOD),isKeyDown(KeyEvent.VK_QUOTE),isKeyDown(KeyEvent.VK_SEMICOLON),isKeyDown(KeyEvent.VK_CLOSE_BRACKET),isKeyDown(KeyEvent.VK_D),isKeyDown(KeyEvent.VK_A),isKeyDown(KeyEvent.VK_S),isKeyDown(KeyEvent.VK_W),isKeyDown(KeyEvent.VK_RIGHT), isKeyDown(KeyEvent.VK_LEFT), isKeyDown(KeyEvent.VK_DOWN), isKeyDown(KeyEvent.VK_UP), isKeyDown(KeyEvent.KEY_PRESSED));
 			return;
 		}
 		

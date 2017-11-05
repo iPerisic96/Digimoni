@@ -85,6 +85,10 @@ public class Animation {
 		mySheet.drawTo(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
 	}
 	
+	public void evolve(){
+		
+	}
+	
 	public int getAnimation(){
 		return animationID; 
 	}

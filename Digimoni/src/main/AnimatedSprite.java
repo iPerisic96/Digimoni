@@ -89,7 +89,7 @@ public class AnimatedSprite{
 	
 	
 	
-	public void update(boolean d, boolean a, boolean s, boolean w, boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
+	public void update(boolean h, boolean c, boolean v, boolean f, boolean g, boolean e, boolean l, boolean la2, boolean ha2, boolean sa2, boolean ua2, boolean e2, boolean d, boolean a, boolean s, boolean w, boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
 		
 		//Player1
 		
@@ -110,10 +110,35 @@ public class AnimatedSprite{
 			player1.move(0, -PLAYER_SPEED);
 			player1.update(JUMP);
 		}
+		else if(h){
+			player1.move(0, 0);
+			player1.update(ENERGYCHANNEL);
+		}
+		else if(c){
+			player1.move(0, 0);
+			player1.update(LIGHTATTACK);
+		}
+		else if(v){
+			player1.move(0, 0);
+			player1.update(HEAVYATTACK);
+		}
+		else if(f){
+			player1.move(0, 0);
+			player1.update(SPECIAL);
+		}
+		else if(g){
+			player1.move(0, 0);
+			player1.update(ULTIMATE);
+		}
+		else if(e){
+			player1.move(0, 0);
+			player1.evolve();
+		}
 		else if(pressed==false){
 			player1.move(0,0);
 			player1.update(IDLE);
 		}
+		
 
 		//Player2
 		
@@ -133,6 +158,30 @@ public class AnimatedSprite{
 			//NEEDS FIXING
 			player2.move(0, -PLAYER_SPEED);
 			player2.update(JUMP);
+		}
+		else if(l){
+			player2.move(0, 0);
+			player2.update(ENERGYCHANNEL);
+		}
+		else if(la2){
+			player2.move(0, 0);
+			player2.update(LIGHTATTACK);
+		}
+		else if(ha2){
+			player2.move(0, 0);
+			player2.update(HEAVYATTACK);
+		}
+		else if(sa2){
+			player2.move(0, 0);
+			player2.update(SPECIAL);
+		}
+		else if(ua2){
+			player2.move(0, 0);
+			player2.update(ULTIMATE);
+		}
+		else if(e2){
+			player2.move(0, 0);
+			player2.evolve();
 		}
 		else if(pressed==false){
 			player2.move(0,0);
@@ -191,9 +240,59 @@ public class AnimatedSprite{
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(GUARD).getPosinsheet());
 			player1.play();		
-
-
 		}
+		else if(keyCode == KeyEvent.VK_H){
+			if(keyCode!=lastKey){
+				player1.setFrame(0, ENERGYCHANNEL);
+				lastKeyPressed(keyCode);
+			}
+			player1.setAnimation(player1.getSpriteMoves().get(ENERGYCHANNEL).getPosinsheet());
+			player1.play();		
+		}
+		else if(keyCode == KeyEvent.VK_C){
+			if(keyCode!=lastKey){
+				player1.setFrame(0, LIGHTATTACK);
+				lastKeyPressed(keyCode);
+			}
+			player1.setAnimation(player1.getSpriteMoves().get(LIGHTATTACK).getPosinsheet());
+			player1.play();		
+		}
+		else if(keyCode == KeyEvent.VK_V){
+			if(keyCode!=lastKey){
+				player1.setFrame(0, HEAVYATTACK);
+				lastKeyPressed(keyCode);
+			}
+			player1.setAnimation(player1.getSpriteMoves().get(HEAVYATTACK).getPosinsheet());
+			player1.play();		
+		}
+		else if(keyCode == KeyEvent.VK_F){
+			if(keyCode!=lastKey){
+				player1.setFrame(0, SPECIAL);
+				lastKeyPressed(keyCode);
+			}
+			player1.setAnimation(player1.getSpriteMoves().get(SPECIAL).getPosinsheet());
+			player1.play();		
+		}
+		else if(keyCode == KeyEvent.VK_G){
+			if(keyCode!=lastKey){
+				player1.setFrame(0, ULTIMATE);
+				lastKeyPressed(keyCode);
+			}
+			player1.setAnimation(player1.getSpriteMoves().get(ULTIMATE).getPosinsheet());
+			player1.play();		
+		}
+		else if(keyCode == KeyEvent.VK_E){
+			if(keyCode!=lastKey){
+				player1.setFrame(0, IDLE);
+				lastKeyPressed(keyCode);
+			}
+			//player1.setAnimation(player1.getSpriteMoves().get(GUARD).getPosinsheet());
+			//player1.play();
+			System.out.println("Evoluiram prvi.");
+		}
+		
+		
+		
 		
 		//Player2
 		
@@ -235,6 +334,55 @@ public class AnimatedSprite{
 
 
 		}
+		else if(keyCode == KeyEvent.VK_L){
+			if(keyCode!=lastKey){
+				player2.setFrame(0, ENERGYCHANNEL);
+				lastKeyPressed(keyCode);
+			}
+			player2.setAnimation(player2.getSpriteMoves().get(ENERGYCHANNEL).getPosinsheet());
+			player2.play();
+		}
+		else if(keyCode == KeyEvent.VK_SLASH){
+			if(keyCode!=lastKey){
+				player2.setFrame(0, LIGHTATTACK);
+				lastKeyPressed(keyCode);
+			}
+			player2.setAnimation(player2.getSpriteMoves().get(LIGHTATTACK).getPosinsheet());
+			player2.play();		
+		}
+		else if(keyCode == KeyEvent.VK_PERIOD){
+			if(keyCode!=lastKey){
+				player2.setFrame(0, HEAVYATTACK);
+				lastKeyPressed(keyCode);
+			}
+			player2.setAnimation(player2.getSpriteMoves().get(HEAVYATTACK).getPosinsheet());
+			player2.play();		
+		}
+		else if(keyCode == KeyEvent.VK_QUOTE){
+			if(keyCode!=lastKey){
+				player2.setFrame(0, SPECIAL);
+				lastKeyPressed(keyCode);
+			}
+			player2.setAnimation(player2.getSpriteMoves().get(SPECIAL).getPosinsheet());
+			player2.play();		
+		}
+		else if(keyCode == KeyEvent.VK_SEMICOLON){
+			if(keyCode!=lastKey){
+				player2.setFrame(0, ULTIMATE);
+				lastKeyPressed(keyCode);
+			}
+			player2.setAnimation(player2.getSpriteMoves().get(ULTIMATE).getPosinsheet());
+			player2.play();		
+		}
+		else if(keyCode == KeyEvent.VK_CLOSE_BRACKET){
+			if(keyCode!=lastKey){
+				player2.setFrame(0, IDLE);
+				lastKeyPressed(keyCode);
+			}
+			//player2.setAnimation(player2.getSpriteMoves().get(GUARD).getPosinsheet());
+			//player2.play();
+			System.out.println("Evoluiram drugi.");
+		}
 		
 		
 	}
@@ -245,7 +393,7 @@ public class AnimatedSprite{
 		//Player1
 		
 		if(keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_W ||
-				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D)
+				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G || keyCode == KeyEvent.VK_E)
 		{
 			lastKey=-1;
 			player1.stop();
@@ -257,7 +405,7 @@ public class AnimatedSprite{
 		//Player2
 		
 		if(keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_UP ||
-				keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT)
+				keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_L || keyCode == KeyEvent.VK_SLASH || keyCode == KeyEvent.VK_PERIOD || keyCode == KeyEvent.VK_QUOTE || keyCode == KeyEvent.VK_SEMICOLON ||keyCode == KeyEvent.VK_CLOSE_BRACKET)
 		{
 			lastKey=-1;
 			player2.stop();

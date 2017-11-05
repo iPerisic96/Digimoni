@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import rafgfxlib.Util;
@@ -64,8 +65,13 @@ public class SpriteSheet {
 			frameX=frameX%10;
 			frameY++;
 		}
+		/*AffineTransform aTransform = new AffineTransform();
+		aTransform.setToIdentity();
+		aTransform.setToScale(-1, 1);*/
+		
 		System.out.println("Frame X: "+frameX+" FrameY: "+frameY+" FrameW: "+frameW+" FrameH: "+frameH);
 		g.drawImage(sheet, posX - offsetX, posY - offsetY, posX - offsetX + frameW-1, posY - offsetY + frameH-1, frameX * frameW+1, frameY * frameH+1, frameX * frameW + frameW-1, frameY * frameH + frameH-1, null);
+		
 		//g.drawImage(sheet, posX - offsetX, posY - offsetY, posX - offsetX + destcornerx, posY - offsetY + destcornery, frameX * frameW+destcornerx, frameY * frameH+destcornery, frameX * frameW + spriteMove.getSprites().get(frameX).getPxwidth(), frameY * frameH + spriteMove.getSprites().get(frameX).getPxheight(), null);
 		//g.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer)
 	}
