@@ -35,7 +35,9 @@ public class AnimatedSprite{
 	private static final int THROW = 16;
 	private static final int JUMP = 17;
 	
-	
+	private int ground=550;
+	private int jump_speed1=3;
+	private int jump_speed2=3;
 	private static final int PLAYER_SPEED = 3;
 	
     private static int lastKey = -1;
@@ -53,11 +55,12 @@ public class AnimatedSprite{
 		spriteSheet2 = new SpriteSheet(secondPlayerSpriteSheet, 10, 30);
 		spriteSheet2.setOffsets(50, 50);
 		
-		player1 = new Animation(spriteSheet1, "Gatomon", 1500, 1000, 200 ,550);
+		player1 = new Animation(spriteSheet1, "Gatomon", 1500, 1000, 200 ,ground);
 		player1.play();
 		
-		player2 = new Animation(spriteSheet2, "Gabumon", 1500, 1000, 600, 550);
+		player2 = new Animation(spriteSheet2, "Gabumon", 1500, 1000, 600, ground);
 		player2.play();
+		
 		//startThread();
 	}
 
@@ -77,14 +80,13 @@ public class AnimatedSprite{
 		}
 	}
 	
-	
 	public void render(Graphics2D g, int sw, int sh){
 		
 		g.setBackground(backgroundColor);
 		g.clearRect(0, 0, sw, sh);
 		
-		player1.draw(g);
-		player2.draw(g);
+		player1.draw1(g);
+		player2.draw2(g);
 	}
 	
 	
@@ -94,8 +96,15 @@ public class AnimatedSprite{
 		//Player1
 		
 		if(d){
-			player1.move(PLAYER_SPEED, 0);
-			player1.update(RUN);
+			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player1.update(RUN);
+
+			}
+			else{
+				player1.move(PLAYER_SPEED, 0);
+				player1.update(RUN);
+			}
+			
 		}
 		else if(a){
 			player1.move(-PLAYER_SPEED, 0);
@@ -107,8 +116,17 @@ public class AnimatedSprite{
 		}
 		else if(w){
 			//NEEDS FIXING
-			player1.move(0, -PLAYER_SPEED);
-			player1.update(JUMP);
+			if(jump_speed1>0){
+				player1.move(0, -jump_speed1);
+				jump_speed1--;
+				player1.update(JUMP);
+			}
+			else if(jump_speed1<PLAYER_SPEED){
+				jump_speed1++;
+				player1.move(0, jump_speed1);
+				player1.update(JUMP);
+			}
+			
 		}
 		else if(h){
 			player1.move(0, 0);
@@ -142,12 +160,19 @@ public class AnimatedSprite{
 
 		//Player2
 		
-		if(right){
-			player2.move(PLAYER_SPEED, 0);
-			player2.update(RUN);
+		if(left){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),2)){
+				player2.update(RUN);
+
+			}
+			else{
+				player2.move(-PLAYER_SPEED, 0);
+				player2.update(RUN);
+			}
+			
 		}
-		else if(left){
-			player2.move(-PLAYER_SPEED, 0);
+		else if(right){
+			player2.move(PLAYER_SPEED, 0);
 			player2.update(WALK);
 		}
 		else if(down){
@@ -156,8 +181,16 @@ public class AnimatedSprite{
 		}
 		else if(up){
 			//NEEDS FIXING
-			player2.move(0, -PLAYER_SPEED);
-			player2.update(JUMP);
+			if(jump_speed2>0){
+				player2.move(0, -jump_speed2);
+				jump_speed2--;
+				player2.update(JUMP);
+			}
+			else if(jump_speed2<PLAYER_SPEED){
+				jump_speed2++;
+				player2.move(0, jump_speed2);
+				player2.update(JUMP);
+			}
 		}
 		else if(l){
 			player2.move(0, 0);
@@ -215,21 +248,21 @@ public class AnimatedSprite{
 			player1.play();
 
 		}
-		else if(keyCode == KeyEvent.VK_A){
-			if(keyCode!=lastKey){
-				player1.setFrame(0, WALK);
-				lastKeyPressed(keyCode);
-			}
-			player1.setAnimation(player1.getSpriteMoves().get(WALK).getPosinsheet());
-			player1.play();
-
-		}
 		else if(keyCode == KeyEvent.VK_D){
 			if(keyCode!=lastKey){
 				player1.setFrame(0, RUN);
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(RUN).getPosinsheet());
+			player1.play();
+
+		}
+		else if(keyCode == KeyEvent.VK_A){
+			if(keyCode!=lastKey){
+				player1.setFrame(0, WALK);
+				lastKeyPressed(keyCode);
+			}
+			player1.setAnimation(player1.getSpriteMoves().get(WALK).getPosinsheet());
 			player1.play();
 
 		}
@@ -306,7 +339,7 @@ public class AnimatedSprite{
 			player2.play();
 
 		}
-		else if(keyCode == KeyEvent.VK_LEFT){
+		else if(keyCode == KeyEvent.VK_RIGHT){
 			if(keyCode!=lastKey){
 				player2.setFrame(0, WALK);
 				lastKeyPressed(keyCode);
@@ -315,7 +348,7 @@ public class AnimatedSprite{
 			player2.play();
 
 		}
-		else if(keyCode == KeyEvent.VK_RIGHT){
+		else if(keyCode == KeyEvent.VK_LEFT){
 			if(keyCode!=lastKey){
 				player2.setFrame(0, RUN);
 				lastKeyPressed(keyCode);
@@ -392,8 +425,10 @@ public class AnimatedSprite{
 	{ 
 		//Player1
 		
-		if(keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_W ||
-				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G || keyCode == KeyEvent.VK_E)
+		
+		if(keyCode == KeyEvent.VK_S || 
+				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_E||keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G
+				)
 		{
 			lastKey=-1;
 			player1.stop();

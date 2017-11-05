@@ -5,10 +5,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Animation {
+import javafx.beans.binding.IntegerExpression;
+
+public class Animation{
 	
 	private ArrayList<SpriteMove> spriteMoves;
 	private int posX, posY;
@@ -22,16 +23,16 @@ public class Animation {
 	private int healthPoints;
 	private int energyPoints;
 	private String characterName;
+	private boolean isAnimationActive = false;
+	private boolean isOnGround = true;
 	
-
-
 	public ArrayList<SpriteMove> allocateMoves(String character) throws NumberFormatException, IOException{
 		ArrayList<SpriteMove> methodSpriteMoves = new ArrayList<>();
 		BufferedReader bReader = new BufferedReader(new FileReader(new File("SpriteInfo/"+character+"Moves.txt")));
 		String line;
 		for(int i=0;i<18;i++){
 			if((line = bReader.readLine())!=null){
-				System.out.println(line);
+				//System.out.println(line);
 				ArrayList<Sprite> movesprites=new ArrayList<>();
 				String[]linijafajla=line.split(";");
 				String[]pikselisprajtova=linijafajla[4].split(",");
@@ -48,7 +49,7 @@ public class Animation {
 				return null;
 			}
 		}	
-		System.out.println(methodSpriteMoves.get(0).getSprites().size());
+		//System.out.println(methodSpriteMoves.get(0).getSprites().size());
 		bReader.close();
 		return methodSpriteMoves;
 	}
@@ -72,7 +73,11 @@ public class Animation {
 	public void update(int move){
 		if(animPlaying){
 			frameCountdown--;
+			
 			if(frameCountdown < 0){
+				if(animFrame+1!=spriteMoves.get(move).getLengthofmove()){
+					isAnimationActive=true;
+				}else isAnimationActive=false;
 				animFrame = (animFrame+1) % spriteMoves.get(move).getLengthofmove();
 				
 				frameCountdown = frameInterval;
@@ -81,10 +86,12 @@ public class Animation {
 		}
 	}
 	
-	public void draw(Graphics g){
+	public void draw1(Graphics g){
 		mySheet.drawTo(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
 	}
-	
+	public void draw2(Graphics g){
+		mySheet.drawToRotated(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
+	}
 	public void evolve(){
 		
 	}
@@ -95,7 +102,7 @@ public class Animation {
 	
 	public void setAnimation(int anim){
 		if(anim >= 0 && anim < mySheet.getRowCount())
-			System.out.println("ANIMATIONID NUMBER: "+anim);
+			//System.out.println("ANIMATIONID NUMBER: "+anim);
 			animationID = anim;
 	}
 	
@@ -147,6 +154,26 @@ public class Animation {
 		posY += movY;
 	}
 	
+	public boolean isCollisionDetected(int player1X, int player2X, int player1Y, int player2Y,int player){
+		System.out.println("Player1: X= "+player1X+"| Y= "+player1Y);
+		System.out.println("Player2: X= "+player2X+"| Y= "+player2Y);
+		if(player==1){
+			if((player1X==player2X-25||player1X==player2X-24||player1X==player2X-23) && player1Y==player2Y){
+				return true;
+			}
+			else return false;
+	
+		}else if(player==2){
+			if((player1X==player2X+25 || player1X==player2X+26||player1X==player2X+27) && player1Y==player2Y){
+				return true;
+			}
+			else return false;
+		}
+		else return false;
+	}
+	
+	
+	
 	public int getHealthPoints() {
 		return healthPoints;
 	}
@@ -191,6 +218,30 @@ public class Animation {
 
 	public void setCharacterName(String characterName) {
 		this.characterName = characterName;
+	}
+
+
+
+	public boolean isAnimationActive() {
+		return isAnimationActive;
+	}
+
+
+
+	public void setAnimationActive(boolean isAnimationActive) {
+		this.isAnimationActive = isAnimationActive;
+	}
+
+
+
+	public boolean isOnGround() {
+		return isOnGround;
+	}
+
+
+
+	public void setOnGround(boolean isOnGround) {
+		this.isOnGround = isOnGround;
 	}
 	
 }
