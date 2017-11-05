@@ -25,35 +25,32 @@ public class Animation {
 	
 
 
-	public ArrayList<SpriteMove> allocateMoves(SpriteSheet sheet, String character) throws NumberFormatException, IOException{
+	public ArrayList<SpriteMove> allocateMoves(String character) throws NumberFormatException, IOException{
 		ArrayList<SpriteMove> methodSpriteMoves = new ArrayList<>();
-		if(sheet.getSheetName().equals("SpriteSheets/GatomonSpriteSheetCombined.png")&& character.equals("Gatomon")){
-			BufferedReader bReader = new BufferedReader(new FileReader(new File("SpriteInfo/GatomonMoves.txt")));
-			String line;
-			for(int i=0;i<18;i++){
-				if((line = bReader.readLine())!=null){
-					System.out.println(line);
-					ArrayList<Sprite> movesprites=new ArrayList<>();
-					String[]linijafajla=line.split(";");
-					String[]pikselisprajtova=linijafajla[4].split(",");
-					for(int j=0;j<pikselisprajtova.length;j++){
-						String[]pojedinacnipikseli=pikselisprajtova[j].split("x");
-						Sprite sprite = new Sprite(Integer.parseInt(pojedinacnipikseli[0]),Integer.parseInt(pojedinacnipikseli[1]));
-						movesprites.add(sprite);
-					}
-					SpriteMove thismethodSpriteMove= new SpriteMove(Integer.parseInt(linijafajla[0]), Integer.parseInt(linijafajla[1]), Integer.parseInt(linijafajla[2]), linijafajla[3], linijafajla[5], movesprites);
-					methodSpriteMoves.add(thismethodSpriteMove);
+		BufferedReader bReader = new BufferedReader(new FileReader(new File("SpriteInfo/"+character+"Moves.txt")));
+		String line;
+		for(int i=0;i<18;i++){
+			if((line = bReader.readLine())!=null){
+				System.out.println(line);
+				ArrayList<Sprite> movesprites=new ArrayList<>();
+				String[]linijafajla=line.split(";");
+				String[]pikselisprajtova=linijafajla[4].split(",");
+				for(int j=0;j<pikselisprajtova.length;j++){
+					String[]pojedinacnipikseli=pikselisprajtova[j].split("x");
+					Sprite sprite = new Sprite(Integer.parseInt(pojedinacnipikseli[0]),Integer.parseInt(pojedinacnipikseli[1]));
+					movesprites.add(sprite);
 				}
-				else{
-					System.out.println("Fajl ima manje linija nego predvidjeno");
-					return null;
-				}
+				SpriteMove thismethodSpriteMove= new SpriteMove(Integer.parseInt(linijafajla[0]), Integer.parseInt(linijafajla[1]), Integer.parseInt(linijafajla[2]), linijafajla[3], linijafajla[5], movesprites);
+				methodSpriteMoves.add(thismethodSpriteMove);
 			}
-		}
-			
+			else{
+				System.out.println("Fajl ima manje linija nego predvidjeno");
+				return null;
+			}
+		}	
 		System.out.println(methodSpriteMoves.get(0).getSprites().size());
+		bReader.close();
 		return methodSpriteMoves;
-		
 	}
 	
 	
@@ -65,7 +62,7 @@ public class Animation {
 		characterName = character;
 		healthPoints = health;
 		energyPoints = energy;
-		spriteMoves=allocateMoves(sheet, character);
+		spriteMoves=allocateMoves(character);
 		currentMove=0;
 		
 
