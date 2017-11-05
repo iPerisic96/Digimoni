@@ -5,6 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 import rafgfxlib.Util;
 
@@ -21,8 +23,12 @@ public class AnimatedSprite{
 	
 	private BufferedImage cloud = null;
 	private BufferedImage village = null;
-	
+	private ArrayList<BufferedImage> clouds = new ArrayList<BufferedImage>();
 	private BufferedImage platform = null;
+	private BufferedImage mountain = null;
+	private int countX = 0;
+	private int countW = 0;
+	private int counter = 0;
 	
 	private static final int IDLE = 0;
 	private static final int WALK = 1;
@@ -43,7 +49,7 @@ public class AnimatedSprite{
 	private static final int THROW = 16;
 	private static final int JUMP = 17;
 	
-	private int ground=550;
+	private int ground = 782;
 	private int jump_speed1=3;
 	private int jump_speed2=3;
 	private static final int PLAYER_SPEED = 3;
@@ -56,10 +62,14 @@ public class AnimatedSprite{
 		//super("PrimerPozadine", 640, 480);
 		
 		//setUpdateRate(60);
+		for (int i = 1; i < 8; i++){
+			cloud = Util.loadImage("clouds/Cloud" + i + ".png");
+			clouds.add(cloud);
+		}
 		
-		cloud = Util.loadImage("clouds/Cloud1.png");
 		village = Util.loadImage("village.png");
 		platform = Util.loadImage("tile.png");
+		mountain = Util.loadImage("mountain.png");
 		
 		spriteSheet1 = new SpriteSheet(firstPlayerSpriteSheet, 10, 30);
 		spriteSheet1.setOffsets(50, 50);
@@ -67,10 +77,10 @@ public class AnimatedSprite{
 		spriteSheet2 = new SpriteSheet(secondPlayerSpriteSheet, 10, 30);
 		spriteSheet2.setOffsets(50, 50);
 		
-		player1 = new Animation(spriteSheet1, "Gatomon", 1500, 1000, 200 ,ground);
+		player1 = new Animation(spriteSheet1, "Gatomon", 1500, 1000, 200 , ground);
 		player1.play();
 		
-		player2 = new Animation(spriteSheet2, "Gabumon", 1500, 1000, 600, ground);
+		player2 = new Animation(spriteSheet2, "Gabumon", 1500, 1000, 800, ground);
 		player2.play();
 		
 		//startThread();
@@ -97,17 +107,33 @@ public class AnimatedSprite{
 		g.setBackground(backgroundColor);
 		g.clearRect(0, 0, sw, sh);
 		
-
-		g.drawImage(cloud, 0, 50, null);
+		countX += 1;
+		if (countX > 2100){
+			countX = 0;
+		}
+		System.out.println(countX);
 		
-		for (int x = 1; x <= sw; x++){
-			g.drawImage(platform, sw - x * (platform.getWidth()-1), sh-platform.getHeight(),  null);
+		g.drawImage(clouds.get(0), sw - countX , 50, null);
+		g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - countX, clouds.get(1).getWidth()/2, null);
+		g.drawImage(clouds.get(2), sw + clouds.get(2).getWidth() + clouds.get(1).getWidth() - countX, 50, null);
+		g.drawImage(clouds.get(3), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() -countX, 50, null);
+		g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -countX, 50, null);
+		g.drawImage(clouds.get(1), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() + clouds.get(4).getWidth()  -countX, 50, null);
+		
+		
+		for (int i = 0; i < 3; i++){
+			g.drawImage(mountain, i * mountain.getWidth() , sh - mountain.getHeight() - platform.getHeight(), null);
 		}
-		for (int y = 1; y <= sw; y++){
-			g.drawImage(village, sw - y*(village.getWidth()), sh-village.getHeight()-platform.getHeight(), null);
+		
+		for (int x = 0; x < sw; x++){
+			g.drawImage(platform, x * (platform.getWidth()-1), sh-platform.getHeight(),  null);
+				
 		}
-		player1.draw1(g);
-		player2.draw2(g);
+		
+		for (int y = 0; y < 3; y++){
+			g.drawImage(village, y*(village.getWidth()), sh-village.getHeight()-platform.getHeight(), null);
+		}
+		
 
 		player1.draw1(g);
 		player2.draw2(g);
