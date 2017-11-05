@@ -28,6 +28,7 @@ public class OpeningScreen extends GameFrame
 	MenuButton back;
 	ArrayList<MenuButton> buttons= new ArrayList<>();
 	boolean startb=false;
+	boolean back1b = false;
 	AnimatedSprite animatedSprite;
 	BufferedImage starth = Util.loadImage("dugmad/start1.png");
 	BufferedImage controlsh = Util.loadImage("dugmad/controls1.png");
@@ -41,7 +42,7 @@ public class OpeningScreen extends GameFrame
 	BufferedImage backn= Util.loadImage("dugmad/back.png");
 	
 	BufferedImage zekice = Util.loadImage("maxresdefault.jpg");
-	
+	BufferedImage zekan = Util.loadImage("bunny.jpg");
 	boolean backb=false;
 	
 	
@@ -188,15 +189,17 @@ public class OpeningScreen extends GameFrame
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
                 1f));
 		//g.setColor(null);
-		if(!backb){
+		if(!backb && !back1b){
 			for(MenuButton b : buttons){
 				b.render(g, sw, sh);
 			}
-		}else{
+		}else if(backb){
 			back.render(g, sw, sh);
 			g.drawImage(zekice, 200, 200,500, 500, null);
+		}else if(back1b){
+			back.render(g, sw, sh);
+			g.drawImage(zekan, 200, 200, 100, 100, null);
 		}
-		
 		
 	}
 
@@ -236,13 +239,15 @@ public class OpeningScreen extends GameFrame
 			p.angle += p.rot;
 			p.rot *= 0.99f;
 		}
-		if(!backb){
+		if(!backb && !back1b){
 			for(MenuButton b : buttons){
 				b.update(getMouseX(), getMouseY());
 			}
 				
 			
-		}else{
+		}else if(backb){
+			back.update(getMouseX(), getMouseY());
+		}else if(back1b){
 			back.update(getMouseX(), getMouseY());
 		}
 		
@@ -304,23 +309,45 @@ public class OpeningScreen extends GameFrame
 	@Override
 	public void handleMouseUp(int x, int y, GFMouseButton button){
 		if (startb==false){
-			if(x>start.x && x<(start.x+start.image.getWidth()) && y>start.y && y<(start.y+start.image.getHeight())){
+			if(mouseOnButton(x, y, start)){
 				startb=true;
 			}
 		}
 		
 		if(backb==false){
-			if(x>controls.x && x<(controls.x+controls.image.getWidth()) && y>controls.y && y<(controls.y+controls.image.getHeight())){
+			if(mouseOnButton(x, y, controls)){
 				backb=true;
 			}
 		}
 		if(backb==true){
-			if(x>back.x && x<(back.x+back.image.getWidth()) && y>back.y && y<(back.y+back.image.getHeight())){
+			if(mouseOnButton(x, y, back)){
 				backb=false;
 			}
 		}
+		if(back1b==false){
+			if(mouseOnButton(x, y, credits)){
+				back1b=true;
+			}
+		}
+		if(back1b==true){
+			if(mouseOnButton(x, y, back)){
+				back1b=false;
+			}
+		}
+	}
+	
+	public int widthButton(MenuButton b){
+		return b.x+b.image.getWidth();
+	}
+	public int heightButton(MenuButton b){
+		return b.y+b.image.getHeight();
 	}
 
+	public boolean mouseOnButton(int x, int y, MenuButton b){
+		if(x>b.x && x<(widthButton(b)) && y>b.y && y<(heightButton(b))){
+			return true;
+		}else return false;
+	}
 	@Override
 	public void handleMouseMove(int x, int y) { }
 
