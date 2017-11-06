@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javafx.beans.binding.IntegerExpression;
 
 public class Animation{
 	
@@ -25,6 +24,11 @@ public class Animation{
 	private String characterName;
 	private boolean isAnimationActive = false;
 	private boolean isOnGround = true;
+	private boolean isJumping = true;
+	private boolean isFalling = false;
+	private String currentActiveAnimation = "";
+	private int animCounter=-1;
+	
 	
 	public ArrayList<SpriteMove> allocateMoves(String character) throws NumberFormatException, IOException{
 		ArrayList<SpriteMove> methodSpriteMoves = new ArrayList<>();
@@ -73,15 +77,14 @@ public class Animation{
 	public void update(int move){
 		if(animPlaying){
 			frameCountdown--;
-			
 			if(frameCountdown < 0){
 				if(animFrame+1!=spriteMoves.get(move).getLengthofmove()){
 					isAnimationActive=true;
 				}else isAnimationActive=false;
 				animFrame = (animFrame+1) % spriteMoves.get(move).getLengthofmove();
-				
 				frameCountdown = frameInterval;
 				currentMove=move;
+				
 			}
 		}
 	}
@@ -149,7 +152,7 @@ public class Animation{
 		return posY;
 	}
 	
-	public void move(int movX, int movY){
+	public void move(float movX, float movY){
 		posX += movX;
 		posY += movY;
 	}
@@ -235,6 +238,7 @@ public class Animation{
 
 
 	public boolean isOnGround() {
+		
 		return isOnGround;
 	}
 
@@ -242,6 +246,54 @@ public class Animation{
 
 	public void setOnGround(boolean isOnGround) {
 		this.isOnGround = isOnGround;
+	}
+
+
+
+	public boolean isJumping() {
+		return isJumping;
+	}
+
+
+
+	public void setJumping(boolean isJumping) {
+		this.isJumping = isJumping;
+	}
+
+
+
+	public boolean isFalling() {
+		return isFalling;
+	}
+
+
+
+	public void setFalling(boolean isFalling) {
+		this.isFalling = isFalling;
+	}
+
+
+
+	public int getAnimCounter() {
+		return animCounter;
+	}
+
+
+
+	public void setAnimCounter(int animCounter) {
+		this.animCounter = animCounter;
+	}
+
+
+
+	public String getCurrentActiveAnimation() {
+		return currentActiveAnimation;
+	}
+
+
+
+	public void setCurrentActiveAnimation(String currentActiveAnimation) {
+		this.currentActiveAnimation = currentActiveAnimation;
 	}
 	
 }

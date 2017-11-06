@@ -50,9 +50,11 @@ public class AnimatedSprite{
 	private static final int JUMP = 17;
 	
 	private int ground = 782;
-	private int jump_speed1=3;
-	private int jump_speed2=3;
-	private static final int PLAYER_SPEED = 3;
+	private float jump_speed1=3;
+	private float jump_speed2=3;
+	private float gravity = 0.05f;
+	
+	private static final float PLAYER_SPEED = 3;
 	
     private static int lastKey = -1;
 
@@ -165,18 +167,72 @@ public class AnimatedSprite{
 			player1.move(0, 0);
 			player1.update(GUARD);
 		}
-		else if(w){
+		if(w){
 			//NEEDS FIXING
-			if(jump_speed1>0){
+			
+			if(player1.isJumping()){
+				player1.setOnGround(false);
+				jump_speed1-=gravity;
+				if(jump_speed1<0){
+					jump_speed1=0;
+					player1.setFalling(true);
+					player1.setJumping(false);
+					player1.move(0, 0);
+					System.out.println("JMP SPEED: "+jump_speed1);
+					player1.update(JUMP);
+				}else{
+					if(w&&d){
+
+						player1.move(0, -jump_speed1);
+						System.out.println("JMPMOVRIGHT SPEED: "+jump_speed1);
+						player1.update(JUMP);}
+					else{
+					player1.move(0, -jump_speed1);
+					System.out.println("JMP SPEED: "+jump_speed1);
+					player1.update(JUMP);}
+				}if(w&&a){
+
+					player1.move(0, -jump_speed1);
+					System.out.println("JMPMOVLEFT SPEED: "+jump_speed1);
+					player1.update(JUMP);}
+				else{
 				player1.move(0, -jump_speed1);
-				jump_speed1--;
-				player1.update(JUMP);
-			}
-			else if(jump_speed1<PLAYER_SPEED){
-				jump_speed1++;
-				player1.move(0, jump_speed1);
-				player1.update(JUMP);
-			}
+				System.out.println("JMP SPEED: "+jump_speed1);
+				player1.update(JUMP);}
+			
+			}else if(player1.isFalling()){
+				jump_speed1+=gravity;
+				if(jump_speed1>PLAYER_SPEED&&player1.getPositionY()>ground){
+					player1.setPosition(player1.getPositionX(), ground);
+					jump_speed1=PLAYER_SPEED;
+					player1.setFalling(false);
+					player1.setJumping(true);
+					player1.move(0, 0);
+					System.out.println("FALL SPEED: "+jump_speed1);
+					player1.update(JUMP);
+					
+				}else{
+					if(w&&d){
+
+						player1.move(0, jump_speed1);
+						System.out.println("FALLMOVRIGHT SPEED: "+jump_speed1);
+						player1.update(JUMP);
+					}else{
+					player1.move(0, jump_speed1);
+					System.out.println("FALL SPEED: "+jump_speed1);
+					player1.update(JUMP);}
+				}
+				if(w&&a){
+
+					player1.move(0, jump_speed1);
+					System.out.println("FALLMOVLEFT SPEED: "+jump_speed1);
+					player1.update(JUMP);
+				}else{
+					player1.move(0, jump_speed1);
+					System.out.println("FALL SPEED: "+jump_speed1);
+					player1.update(JUMP);}
+				}
+			
 			
 		}
 		else if(h){
@@ -232,6 +288,7 @@ public class AnimatedSprite{
 		}
 		else if(up){
 			//NEEDS FIXING
+			
 			if(jump_speed2>0){
 				player2.move(0, -jump_speed2);
 				jump_speed2--;
@@ -476,9 +533,37 @@ public class AnimatedSprite{
 	{ 
 		//Player1
 		
-		
-		if(keyCode == KeyEvent.VK_S || 
-				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_E||keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G
+		if(keyCode==KeyEvent.VK_W){
+			int br=0;
+			jump_speed1=0;
+			while(player1.getPositionY()<ground){
+				jump_speed1+=gravity;
+				if(jump_speed1>PLAYER_SPEED&&player1.getPositionY()>ground){
+					player1.setPosition(player1.getPositionX(), ground);
+					jump_speed1=PLAYER_SPEED;
+					player1.setFalling(false);
+					player1.setJumping(true);
+					player1.move(0, 0);
+					System.out.println("[H]FALL SPEED: "+jump_speed1);
+					player1.update(JUMP);
+					
+				}else{
+					player1.move(0, jump_speed1);
+					System.out.println("[H]FALL SPEED: "+jump_speed1);
+					player1.update(JUMP);
+				}
+				System.out.println("Counter: "+br++);
+			}
+			player1.setPosition(player1.getPositionX(), ground);
+			jump_speed1=PLAYER_SPEED;
+			lastKey=-1;
+			player1.stop();
+			player1.setAnimation(player1.getSpriteMoves().get(IDLE).getPosinsheet());
+			player1.play();
+			player1.setFrame(0,IDLE);
+		}
+	else if(keyCode == KeyEvent.VK_S || 
+				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_E||/*keyCode == KeyEvent.VK_W ||*/ keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G
 				)
 		{
 			lastKey=-1;

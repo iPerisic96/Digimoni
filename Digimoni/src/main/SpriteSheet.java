@@ -66,7 +66,7 @@ public class SpriteSheet {
 			frameY++;
 		}
 		
-		System.out.println("Frame X: "+frameX+" FrameY: "+frameY+" FrameW: "+frameW+" FrameH: "+frameH);
+		//System.out.println("Frame X: "+frameX+" FrameY: "+frameY+" FrameW: "+frameW+" FrameH: "+frameH);
 		
 		g.drawImage(sheet, posX - offsetX, posY - offsetY, posX - offsetX + frameW-1, posY - offsetY + frameH-1, frameX * frameW+1, frameY * frameH+1, frameX * frameW + frameW-1, frameY * frameH + frameH-1, null);
 		
