@@ -26,7 +26,7 @@ public class OpeningScreen extends GameFrame
 	MenuButton back;
 	ArrayList<MenuButton> buttons= new ArrayList<>();
 	boolean startb=false;
-	boolean back1b = false;
+	boolean backcredits = false;
 	AnimatedSprite animatedSprite;
 	BufferedImage starth = Util.loadImage("dugmad/start1.png");
 	BufferedImage controlsh = Util.loadImage("dugmad/controls1.png");
@@ -41,7 +41,16 @@ public class OpeningScreen extends GameFrame
 	
 	BufferedImage zekice = Util.loadImage("maxresdefault.jpg");
 	BufferedImage zekan = Util.loadImage("bunny.jpg");
-	boolean backb=false;
+	BufferedImage ivanslika = Util.loadImage("tim/grafikaivan.jpg");
+	BufferedImage andrejslika = Util.loadImage("tim/grafikaandrej.jpg");
+	BufferedImage dubislika = Util.loadImage("tim/grafikadubi.jpg");
+	
+	Image andrej;
+	Image ivan;
+	Image dubravka;
+	
+
+	boolean backcontrols=false;
 	
 	
 	public static class Star
@@ -110,6 +119,10 @@ public class OpeningScreen extends GameFrame
 		
 		back = new MenuButton(100, 100, backh, backn);
 		
+		ivan = new Image(ivanslika, 80, 300, 250, 300);
+		andrej = new Image(andrejslika, 380, 300, 250, 300);
+		dubravka = new Image(dubislika, 680, 300, 250, 300);
+		
 		for(int i = 0; i < STAR_MAX; ++i)
 		{
 			stars[i] = new Star();
@@ -154,8 +167,8 @@ public class OpeningScreen extends GameFrame
 			float sX1 = sw / 2 + s.posX * (400.0f / s.posZ);
 			float sY1 = sh / 2 + s.posY * (400.0f / s.posZ);
 			
-			float sX2 = sw / 2 + s.posX * (400.0f / (s.posZ + speed));
-			float sY2 = sh / 2 + s.posY * (400.0f / (s.posZ + speed));
+			//float sX2 = sw / 2 + s.posX * (400.0f / (s.posZ + speed));
+			//float sY2 = sh / 2 + s.posY * (400.0f / (s.posZ + speed));
 			
 			int brightness = (int)(255 - (s.posZ / MAX_Z) * 255.0f);
 			g.setColor(grayscale[brightness]);
@@ -187,16 +200,21 @@ public class OpeningScreen extends GameFrame
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
                 1f));
 		//g.setColor(null);
-		if(!backb && !back1b){
+		if(!backcontrols && !backcredits){
 			for(MenuButton b : buttons){
 				b.render(g, sw, sh);
 			}
-		}else if(backb){
+		}else if(backcontrols){
 			back.render(g, sw, sh);
 			g.drawImage(zekice, 200, 200,500, 500, null);
-		}else if(back1b){
+		}else if(backcredits){
 			back.render(g, sw, sh);
-			g.drawImage(zekan, 200, 200, 100, 100, null);
+//			g.drawImage(andrejslika, 300, 200, 200, 200, null);
+//			g.drawImage(dubislika, 300,  400, 200, 200, null);
+//			g.drawImage(ivanslika, 300, 600, 200, 200, null);
+			andrej.render(g, sw, sh);
+			ivan.render(g, sw, sh);
+			dubravka.render(g, sw, sh);
 		}
 		
 	}
@@ -237,16 +255,17 @@ public class OpeningScreen extends GameFrame
 			p.angle += p.rot;
 			p.rot *= 0.99f;
 		}
-		if(!backb && !back1b){
+		if(!backcontrols && !backcredits){
 			for(MenuButton b : buttons){
 				b.update(getMouseX(), getMouseY());
 			}
 				
 			
-		}else if(backb){
+		}else if(backcontrols){
 			back.update(getMouseX(), getMouseY());
-		}else if(back1b){
+		}else if(backcredits){
 			back.update(getMouseX(), getMouseY());
+			
 		}
 		
 		
@@ -312,24 +331,24 @@ public class OpeningScreen extends GameFrame
 			}
 		}
 		
-		if(backb==false){
+		if(backcontrols==false){
 			if(mouseOnButton(x, y, controls)){
-				backb=true;
+				backcontrols=true;
 			}
 		}
-		if(backb==true){
+		if(backcontrols==true){
 			if(mouseOnButton(x, y, back)){
-				backb=false;
+				backcontrols=false;
 			}
 		}
-		if(back1b==false){
+		if(backcredits==false){
 			if(mouseOnButton(x, y, credits)){
-				back1b=true;
+				backcredits=true;
 			}
 		}
-		if(back1b==true){
+		if(backcredits==true){
 			if(mouseOnButton(x, y, back)){
-				back1b=false;
+				backcredits=false;
 			}
 		}
 	}
@@ -346,6 +365,10 @@ public class OpeningScreen extends GameFrame
 			return true;
 		}else return false;
 	}
+	
+	//public void mouseOnImage(int x, int y, BufferedImage i){
+		//if(x>i.x)
+	//}
 	@Override
 	public void handleMouseMove(int x, int y) { }
 
