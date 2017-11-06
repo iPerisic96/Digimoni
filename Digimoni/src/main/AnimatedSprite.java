@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.sun.media.jfxmedia.events.PlayerEvent;
+
 import rafgfxlib.Util;
 
 
@@ -49,10 +51,16 @@ public class AnimatedSprite{
 	private static final int THROW = 16;
 	private static final int JUMP = 17;
 	
+	private long starttime1=-1;
+	private long starttime2=-1;
+	
 	private int ground = 782;
 	private float jump_speed1=3;
 	private float jump_speed2=3;
 	private float gravity = 0.05f;
+	
+	private int playerleft = 0;
+	private int playerright = 0;
 	
 	private static final float PLAYER_SPEED = 3;
 	
@@ -85,6 +93,11 @@ public class AnimatedSprite{
 		player2 = new Animation(spriteSheet2, "Gabumon", 1500, 1000, 800, ground);
 		player2.play();
 		
+		playerleft=player1.getPositionX();
+		playerright=player2.getPositionX();
+		player1.setOrientation("LEFT");
+		player2.setOrientation("RIGHT");
+		
 		//startThread();
 	}
 
@@ -103,7 +116,7 @@ public class AnimatedSprite{
 			lastKey=currentKey;
 		}
 	}
-	
+	 
 	public void render(Graphics2D g, int sw, int sh){
 		
 		g.setBackground(backgroundColor);
@@ -137,8 +150,41 @@ public class AnimatedSprite{
 		}
 		
 
-		player1.draw1(g);
-		player2.draw2(g);
+		if(playerright-playerleft>0){
+			if(player1.getOrientation()=="RIGHT"||player2.getOrientation()==""){
+				player1.switchOrientation();
+				player2.switchOrientation();
+			}
+			if(player1.isEvolving()){
+				if(starttime1==-1)starttime1=System.currentTimeMillis();
+				player1.evolve(g,starttime1);
+			}else{
+				player1.draw1(g);
+			}
+			if(player2.isEvolving()){
+				if(starttime2==-1)starttime2=System.currentTimeMillis();
+				player2.evolve(g,starttime2);
+			}else{
+				player2.draw2(g);
+			}
+		}else{
+			if(player1.getOrientation()=="LEFT"||player2.getOrientation()=="RIGHT"){
+				player1.switchOrientation();
+				player2.switchOrientation();
+			}
+			if(player1.isEvolving()){
+				if(starttime1==-1)starttime1=System.currentTimeMillis();
+				player1.evolve(g,starttime1);
+			}else{
+				player1.draw2(g);
+			}
+			if(player2.isEvolving()){
+				if(starttime2==-1)starttime2=System.currentTimeMillis();
+				player2.evolve(g,starttime2);
+			}else{
+				player2.draw1(g);
+			}
+		}
 
 	}
 	
@@ -160,6 +206,7 @@ public class AnimatedSprite{
 			
 		}
 		else if(a){
+			
 			player1.move(-PLAYER_SPEED, 0);
 			player1.update(WALK);
 		}
@@ -257,9 +304,10 @@ public class AnimatedSprite{
 		}
 		else if(e){
 			player1.move(0, 0);
-			player1.evolve();
+			player1.update(TAUNT);
+			
 		}
-		else if(pressed==false){
+		else if(pressed==false&&player1.isEvolving()==false){
 			player1.move(0,0);
 			player1.update(IDLE);
 		}
@@ -322,13 +370,16 @@ public class AnimatedSprite{
 		}
 		else if(e2){
 			player2.move(0, 0);
-			player2.evolve();
+			player2.update(IDLE);
+			
 		}
 		else if(pressed==false){
 			player2.move(0,0);
 			player2.update(IDLE);
 		}
 		
+		playerleft=player1.getPositionX();
+		playerright=player2.getPositionX();
 	}
 
 	/*@Override
@@ -424,7 +475,7 @@ public class AnimatedSprite{
 		}
 		else if(keyCode == KeyEvent.VK_E){
 			if(keyCode!=lastKey){
-				player1.setFrame(0, IDLE);
+				player1.setFrame(0, TAUNT);
 				lastKeyPressed(keyCode);
 			}
 			//player1.setAnimation(player1.getSpriteMoves().get(GUARD).getPosinsheet());
@@ -517,7 +568,7 @@ public class AnimatedSprite{
 		}
 		else if(keyCode == KeyEvent.VK_CLOSE_BRACKET){
 			if(keyCode!=lastKey){
-				player2.setFrame(0, IDLE);
+				player2.setFrame(0, TAUNT);
 				lastKeyPressed(keyCode);
 			}
 			//player2.setAnimation(player2.getSpriteMoves().get(GUARD).getPosinsheet());
@@ -532,7 +583,7 @@ public class AnimatedSprite{
 	public void handleKeyUp(int keyCode) 
 	{ 
 		//Player1
-		
+		if(player1.isEvolving()==false){
 		if(keyCode==KeyEvent.VK_W){
 			int br=0;
 			jump_speed1=0;
@@ -566,6 +617,7 @@ public class AnimatedSprite{
 				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_E||/*keyCode == KeyEvent.VK_W ||*/ keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G
 				)
 		{
+			if(keyCode == KeyEvent.VK_E){player1.setEvolving(true);System.out.println("EVOLUIRAM UPRAVO!1");}
 			lastKey=-1;
 			player1.stop();
 			player1.setAnimation(player1.getSpriteMoves().get(IDLE).getPosinsheet());
@@ -573,11 +625,13 @@ public class AnimatedSprite{
 			player1.setFrame(0,IDLE);
 		}
 		
+		}
 		//Player2
 		
 		if(keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_UP ||
 				keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_L || keyCode == KeyEvent.VK_SLASH || keyCode == KeyEvent.VK_PERIOD || keyCode == KeyEvent.VK_QUOTE || keyCode == KeyEvent.VK_SEMICOLON ||keyCode == KeyEvent.VK_CLOSE_BRACKET)
 		{
+			if(keyCode==KeyEvent.VK_CLOSE_BRACKET){player2.setEvolving(true);System.out.println("EVOLUIRAM UPRAVO!2");}
 			lastKey=-1;
 			player2.stop();
 			player2.setAnimation(player2.getSpriteMoves().get(IDLE).getPosinsheet());

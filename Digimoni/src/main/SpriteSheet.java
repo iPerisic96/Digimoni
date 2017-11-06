@@ -1,9 +1,12 @@
 package main;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 
+import rafgfxlib.ImageViewer;
 import rafgfxlib.Util;
 
 public class SpriteSheet {
@@ -13,7 +16,7 @@ public class SpriteSheet {
 	private int sheetW, sheetH;
 	private int offsetX = 0, offsetY = 0;
 	private String sheetName;
-	
+	private BufferedImage evolvedSheet;
 	
 	public SpriteSheet(String imageName, int columns, int rows){
 		
@@ -52,6 +55,155 @@ public class SpriteSheet {
 		return frameH; 
 	}
 	
+	public void grayScale(Graphics g, int posX, int posY, int frameX, int frameY, SpriteMove spriteMove){
+		
+		
+		float rgb[] = new float[3];
+		
+		BufferedImage newSheet = new BufferedImage(sheet.getWidth(), sheet.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for(int y = 0; y < newSheet.getHeight(); y++){
+			for(int x = 0; x < newSheet.getWidth(); x++){
+				Color color = new Color(sheet.getRGB(x, y),true);
+				rgb[0]=color.getRed();
+				rgb[1]=color.getGreen();
+				rgb[2]=color.getBlue();
+				float alpha = color.getAlpha();
+				float i = (rgb[0] * 0.30f + rgb[1] * 0.59f + rgb[2] * 0.11f);				
+				rgb[0] = i;
+				rgb[1] = i;
+				rgb[2] = i;
+				Color newCOlor = new Color(rgb[0]/255, rgb[1]/255, rgb[2]/255,alpha/255);
+				newSheet.setRGB(x, y, newCOlor.getRGB());
+			}
+		}
+		
+		
+		if(sheet == null) return;
+		if(frameX < 0 || frameY < 0 || frameY >= sheetH) return;
+		
+		if(frameX>9){
+			frameX=frameX%10;
+			frameY++;
+		}	
+		//g.drawImage(newSheet, 0, 0, null);
+		g.drawImage(newSheet, posX - offsetX, posY - offsetY, posX - offsetX + frameW-1, posY - offsetY + frameH-1, frameX * frameW+1, frameY * frameH+1, frameX * frameW + frameW-1, frameY * frameH + frameH-1, null);
+		evolvedSheet=newSheet;
+	}
+	public void negative(Graphics g, int posX, int posY, int frameX, int frameY, SpriteMove spriteMove){
+		float rgb[] = new float[3];
+		
+		BufferedImage newSheet = new BufferedImage(evolvedSheet.getWidth(), sheet.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for(int y = 0; y < newSheet.getHeight(); y++){
+			for(int x = 0; x < newSheet.getWidth(); x++){
+				Color color = new Color(sheet.getRGB(x, y),true);
+				rgb[0]=color.getRed();
+				rgb[1]=color.getGreen();
+				rgb[2]=color.getBlue();
+				
+				float alpha = color.getAlpha();
+				
+				rgb[0] = 255-rgb[0];
+				rgb[1] = 255-rgb[1];
+				rgb[2] = 255-rgb[2];
+				Color newCOlor = new Color(rgb[0]/255, rgb[1]/255, rgb[2]/255,alpha/255);
+				newSheet.setRGB(x, y, newCOlor.getRGB());
+			}
+		}
+		
+		
+		if(sheet == null) return;
+		if(frameX < 0 || frameY < 0 || frameY >= sheetH) return;
+		
+		if(frameX>9){
+			frameX=frameX%10;
+			frameY++;
+		}	
+		//g.drawImage(newSheet, 0, 0, null);
+		g.drawImage(newSheet, posX - offsetX, posY - offsetY, posX - offsetX + frameW-1, posY - offsetY + frameH-1, frameX * frameW+1, frameY * frameH+1, frameX * frameW + frameW-1, frameY * frameH + frameH-1, null);
+		evolvedSheet=newSheet;
+	
+	}
+	public static int clamp(int value, int min, int max)
+	{
+		if(value < min) return min;
+		if(value > max) return max;
+		return value;
+	}
+	
+	public static int saturate(int value)
+	{
+		return clamp(value, 0, 255);
+	}
+	
+	public void blinkingNegative(Graphics g, int posX, int posY, int frameX, int frameY, SpriteMove spriteMove){
+		float rgb[] = new float[3];
+		
+		BufferedImage newSheet = new BufferedImage(evolvedSheet.getWidth(), sheet.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for(int y = 0; y < newSheet.getHeight(); y++){
+			for(int x = 0; x < newSheet.getWidth(); x++){
+				Color color = new Color(evolvedSheet.getRGB(x, y),true);
+				rgb[0]=color.getRed();
+				rgb[1]=color.getGreen();
+				rgb[2]=color.getBlue();
+				
+				float alpha = color.getAlpha();
+				
+				rgb[0] = 255-rgb[0];
+				rgb[1] = 255-rgb[1];
+				rgb[2] = 255-rgb[2];
+				Color newCOlor = new Color(rgb[0]/255, rgb[1]/255, rgb[2]/255,alpha/255);
+				newSheet.setRGB(x, y, newCOlor.getRGB());
+			}
+		}
+		
+		
+		if(sheet == null) return;
+		if(frameX < 0 || frameY < 0 || frameY >= sheetH) return;
+		
+		if(frameX>9){
+			frameX=frameX%10;
+			frameY++;
+		}	
+		//g.drawImage(newSheet, 0, 0, null);
+		g.drawImage(newSheet, posX - offsetX, posY - offsetY, posX - offsetX + frameW-1, posY - offsetY + frameH-1, frameX * frameW+1, frameY * frameH+1, frameX * frameW + frameW-1, frameY * frameH + frameH-1, null);
+		evolvedSheet=newSheet;
+	
+	}
+	public void fishEye(Graphics g, int posX, int posY, int frameX, int frameY, SpriteMove spriteMove){
+		float rgb[] = new float[3];
+		
+		BufferedImage newSheet = new BufferedImage(evolvedSheet.getWidth(), sheet.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for(int y = 0; y < newSheet.getHeight(); y++)
+		{
+			for(int x = 0; x < newSheet.getWidth(); x++)
+			{
+				Color color = new Color(sheet.getRGB(x, y),true);
+				rgb[0]=color.getRed();
+				rgb[1]=color.getGreen();
+				rgb[2]=color.getBlue();
+				
+				float alpha = color.getAlpha();
+				
+				rgb[0] = 255-rgb[0];
+				rgb[1] = 255-rgb[1];
+				rgb[2] = 255-rgb[2];
+				Color newCOlor = new Color(rgb[0]/255, rgb[1]/255, rgb[2]/255,alpha/255);
+				newSheet.setRGB(x, y, newCOlor.getRGB());
+			}
+		}
+		
+		
+		if(sheet == null) return;
+		if(frameX < 0 || frameY < 0 || frameY >= sheetH) return;
+		
+		if(frameX>9){
+			frameX=frameX%10;
+			frameY++;
+		}	
+		//g.drawImage(newSheet, 0, 0, null);
+		g.drawImage(newSheet, posX - offsetX, posY - offsetY, posX - offsetX + frameW-1, posY - offsetY + frameH-1, frameX * frameW+1, frameY * frameH+1, frameX * frameW + frameW-1, frameY * frameH + frameH-1, null);
+		evolvedSheet=newSheet;
+	}
 	public void drawTo(Graphics g, int posX, int posY, int frameX, int frameY, SpriteMove spriteMove){
 		
 		if(sheet == null) return;

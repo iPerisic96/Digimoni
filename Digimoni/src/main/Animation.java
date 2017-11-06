@@ -28,7 +28,8 @@ public class Animation{
 	private boolean isFalling = false;
 	private String currentActiveAnimation = "";
 	private int animCounter=-1;
-	
+	private String orientation="";
+	private boolean isEvolving=false;
 	
 	public ArrayList<SpriteMove> allocateMoves(String character) throws NumberFormatException, IOException{
 		ArrayList<SpriteMove> methodSpriteMoves = new ArrayList<>();
@@ -88,15 +89,22 @@ public class Animation{
 			}
 		}
 	}
-	
+	public void evolve(Graphics g, long starttime){
+		long razlika = System.currentTimeMillis()-starttime;
+		System.out.println("RUPA U VREMENU: "+razlika);
+		if(razlika<5000){
+			mySheet.grayScale(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<10000){
+			mySheet.negative(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<15000){
+			mySheet.fishEye(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		
+	}
 	public void draw1(Graphics g){
 		mySheet.drawTo(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
 	}
 	public void draw2(Graphics g){
 		mySheet.drawToRotated(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
-	}
-	public void evolve(){
-		
 	}
 	
 	public int getAnimation(){
@@ -294,6 +302,41 @@ public class Animation{
 
 	public void setCurrentActiveAnimation(String currentActiveAnimation) {
 		this.currentActiveAnimation = currentActiveAnimation;
+	}
+
+
+
+	public String getOrientation() {
+		return orientation;
+	}
+
+
+
+	public void setOrientation(String orientation) {
+		this.orientation = orientation;
+	}
+	
+	public void switchOrientation(){
+		if(orientation.equals("RIGHT")){
+			orientation="LEFT";
+		}else if(orientation.equals("LEFT")){
+			orientation="RIGHT";
+		}else{
+			System.out.println("Orientacija nepostojeca.");
+			orientation="";
+		}
+	}
+
+
+
+	public boolean isEvolving() {
+		return isEvolving;
+	}
+
+
+
+	public void setEvolving(boolean isEvolving) {
+		this.isEvolving = isEvolving;
 	}
 	
 }
