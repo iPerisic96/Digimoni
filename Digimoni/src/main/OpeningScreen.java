@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -48,6 +48,7 @@ public class OpeningScreen extends GameFrame
 	Image andrej;
 	Image ivan;
 	Image dubravka;
+	boolean ivanb=false;
 	
 
 	boolean backcontrols=false;
@@ -119,9 +120,9 @@ public class OpeningScreen extends GameFrame
 		
 		back = new MenuButton(100, 100, backh, backn);
 		
-		ivan = new Image(ivanslika, 80, 300, 250, 300);
-		andrej = new Image(andrejslika, 380, 300, 250, 300);
-		dubravka = new Image(dubislika, 680, 300, 250, 300);
+		ivan = new Image(ivanslika, negativ(ivanslika), 80, 300, 250, 300);
+		dubravka = new Image(dubislika, negativ(dubislika), 380, 300, 250, 300);
+		andrej = new Image(andrejslika, negativ(andrejslika), 680, 300, 250, 300);
 		
 		for(int i = 0; i < STAR_MAX; ++i)
 		{
@@ -209,9 +210,6 @@ public class OpeningScreen extends GameFrame
 			g.drawImage(zekice, 200, 200,500, 500, null);
 		}else if(backcredits){
 			back.render(g, sw, sh);
-//			g.drawImage(andrejslika, 300, 200, 200, 200, null);
-//			g.drawImage(dubislika, 300,  400, 200, 200, null);
-//			g.drawImage(ivanslika, 300, 600, 200, 200, null);
 			andrej.render(g, sw, sh);
 			ivan.render(g, sw, sh);
 			dubravka.render(g, sw, sh);
@@ -265,10 +263,8 @@ public class OpeningScreen extends GameFrame
 			back.update(getMouseX(), getMouseY());
 		}else if(backcredits){
 			back.update(getMouseX(), getMouseY());
-			
-		}
-		
-		
+			ivan.update(1, getMouseX(), getMouseY());
+		}	
 	}
 	
 	private void genEx(float cX, float cY, float radius, int life, int count)
@@ -294,10 +290,6 @@ public class OpeningScreen extends GameFrame
 			}
 		}
 	}
-	
-	
-	 
-	
 
 	@Override
 
@@ -366,9 +358,28 @@ public class OpeningScreen extends GameFrame
 		}else return false;
 	}
 	
-	//public void mouseOnImage(int x, int y, BufferedImage i){
-		//if(x>i.x)
-	//}
+	public BufferedImage negativ(BufferedImage i){
+		WritableRaster source = i.getRaster();
+		WritableRaster target = Util.createRaster(source.getWidth(), source.getHeight(), false);
+		
+		int rgb[] = new int[3];
+		
+		for(int y = 0; y < source.getHeight(); y++)
+		{
+			for(int x = 0; x < source.getWidth(); x++)
+			{
+				source.getPixel(x, y, rgb);
+
+				rgb[0] = 255 - rgb[0];
+				rgb[1] = 255 - rgb[1];
+				rgb[2] = 255 - rgb[2];
+				
+				target.setPixel(x, y, rgb);
+			}
+		}
+		i = Util.rasterToImage(target);
+		return i;
+	}
 	@Override
 	public void handleMouseMove(int x, int y) { }
 
