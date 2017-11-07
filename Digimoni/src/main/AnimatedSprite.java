@@ -117,7 +117,7 @@ public class AnimatedSprite{
 		}
 	}
 	 
-	public void render(Graphics2D g, int sw, int sh){
+	public void render(Graphics2D g, int sw, int sh) throws NumberFormatException, IOException{
 		
 		g.setBackground(backgroundColor);
 		g.clearRect(0, 0, sw, sh);
@@ -198,6 +198,11 @@ public class AnimatedSprite{
 			if(player1.isEvolving()){
 				if(starttime1==-1)starttime1=System.currentTimeMillis();
 				player1.evolve(g,starttime1);
+				if(player1.isEvolutionFinished()){
+					int tempX = player1.getPositionX();
+					player1 = new Animation(spriteSheet2, "Gabumon", 2000, 1000, tempX, ground);
+					player1.play();
+				}
 			}else{
 				player1.draw1(g);
 			}

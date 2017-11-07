@@ -159,7 +159,15 @@ public class OpeningScreen extends GameFrame
 	public void render(Graphics2D g, int sw, int sh)
 	{	
 		if(startb){
-			animatedSprite.render(g, sw, sh); return;
+			try {
+				animatedSprite.render(g, sw, sh);
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} return;
 		}
 		//button.render(g, sw, sh);
 		for(Star s : stars)
