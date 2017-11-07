@@ -293,7 +293,11 @@ public class SpriteSheet {
 		if(destcornerx%2!=0)destcornerx++;
 		int destcornery=frameH-spriteMove.getSprites().get(frameX).getPxheight()/2;
 		if(destcornery%2!=0)destcornery++;*/
-		if(frameX>9&&frameX<20){
+		int tempFX=frameX%10;
+		int tempFY=frameY;
+		if(frameX>9){
+			tempFY+=frameX/10;}
+		/*if(frameX>9&&frameX<20){
 			frameX=frameX%10;
 			frameY++;
 		}else if(frameX>19&&frameX<30){
@@ -303,8 +307,14 @@ public class SpriteSheet {
 		else if(frameX>29&&frameX<40){
 			frameX=frameX%10;
 			frameY+=3;
-		}
+		}*/
+		frameX=tempFX;
+		frameY=tempFY;
 		
+		System.out.println("TEMPFX: "+tempFX+" TEMPFY: "+tempFY );
+		//frameX=tempFX;
+		//frameY=tempFY;
+		System.out.println("FRAMEX: "+frameX+" FRAMEY: "+frameY );
 		//System.out.println("Frame X: "+frameX+" FrameY: "+frameY+" FrameW: "+frameW+" FrameH: "+frameH);
 		
 		g.drawImage(sheet, posX - offsetX, posY - offsetY, posX - offsetX + frameW-1, posY - offsetY + frameH-1, frameX * frameW+1, frameY * frameH+1, frameX * frameW + frameW-1, frameY * frameH + frameH-1, null);
