@@ -15,27 +15,27 @@ public class Image {
 	int y;
 	int h;
 	int w;
-	public Image(BufferedImage i, BufferedImage promena, int x, int y, int h, int w) {
+	public Image(BufferedImage promena, BufferedImage i, int x, int y, int w, int h) {
 		super();
-		this.i = i;
-		this.promena= promena;
-		this.image= promena;
+		this.promena = promena;
+		this.i= i;
 		this.x = x;
 		this.y = y;
-		this.h = h;
 		this.w = w;
+		this.h = h;
+		this.image=promena;
 	}
 	
 	public void render(Graphics2D g, int sw, int sh)
 	{
-		g.drawImage(i, x, y, h, w, null);
+		g.drawImage(image, x, y, w, h, null);
 		
 	}
-	public void update(int br, int MouseX, int MouseY){
-		if(MouseX>= x  && MouseX<=x+image.getWidth() && MouseY>=y && MouseY<=y+image.getHeight()){
-			if(br==1){
+	public void update(int MouseX, int MouseY){
+		if(MouseX>= x  && MouseX<=x+w && MouseY>=y && MouseY<=y+h){
+			//if(br==1){
 				image=promena;
-			}
+			//}
 		}else image=i;
 	}
 	

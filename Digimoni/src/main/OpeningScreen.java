@@ -120,9 +120,9 @@ public class OpeningScreen extends GameFrame
 		
 		back = new MenuButton(100, 100, backh, backn);
 		
-		ivan = new Image(ivanslika, negativ(ivanslika), 80, 300, 250, 300);
-		dubravka = new Image(dubislika, negativ(dubislika), 380, 300, 250, 300);
-		andrej = new Image(andrejslika, negativ(andrejslika), 680, 300, 250, 300);
+		ivan = new Image(negativ(ivanslika), ivanslika, 80, 300, 250, 300);
+		dubravka = new Image(binary(dubislika), dubislika, 380, 300, 250, 300);
+		andrej = new Image(waves(andrejslika), andrejslika, 680, 300, 250, 300);
 		
 		for(int i = 0; i < STAR_MAX; ++i)
 		{
@@ -271,7 +271,9 @@ public class OpeningScreen extends GameFrame
 			back.update(getMouseX(), getMouseY());
 		}else if(backcredits){
 			back.update(getMouseX(), getMouseY());
-			ivan.update(1, getMouseX(), getMouseY());
+			ivan.update(getMouseX(), getMouseY());
+			dubravka.update(getMouseX(), getMouseY());
+			andrej.update(getMouseX(), getMouseY());
 		}	
 	}
 	
@@ -381,6 +383,64 @@ public class OpeningScreen extends GameFrame
 				rgb[0] = 255 - rgb[0];
 				rgb[1] = 255 - rgb[1];
 				rgb[2] = 255 - rgb[2];
+				
+				target.setPixel(x, y, rgb);
+			}
+		}
+		i = Util.rasterToImage(target);
+		return i;
+	}
+	
+	public BufferedImage waves(BufferedImage i){
+		WritableRaster source = i.getRaster();
+		WritableRaster target = Util.createRaster(i.getWidth(), i.getHeight(), false);
+		
+		int rgb[] = new int[3];
+		
+		
+		float power = 8.0f;
+		
+		float size = 0.09f;
+		
+		for(int y = 0; y < i.getHeight(); y++)
+		{			
+			for(int x = 0; x < i.getWidth(); x++)
+			{
+				
+				float srcX = (float)(x + Math.sin(y * size) * power);
+				float srcY = (float)(y + Math.cos(x * size) * power);
+				
+				Util.bilSample(source, srcX, srcY, rgb);
+				target.setPixel(x, y, rgb);
+			}
+		}
+		i = Util.rasterToImage(target);
+		return i;
+	}
+	
+	public BufferedImage binary(BufferedImage i){
+		WritableRaster source = i.getRaster();
+		WritableRaster target = Util.createRaster(source.getWidth(), source.getHeight(), false);
+		
+		int rgb[] = new int[3];
+		
+		for(int y = 0; y < source.getHeight(); y++)
+		{
+			for(int x = 0; x < source.getWidth(); x++)
+			{
+				source.getPixel(x, y, rgb);
+
+				int br = (int)(rgb[0] * 0.30 + rgb[1] * 0.59 + rgb[2] * 0.11);
+				
+
+				if(br > 160)
+					br = 255;
+				else
+					br = 0;
+				
+				rgb[0] = br;
+				rgb[1] = br;
+				rgb[2] = br;
 				
 				target.setPixel(x, y, rgb);
 			}
