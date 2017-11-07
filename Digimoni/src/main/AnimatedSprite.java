@@ -200,7 +200,9 @@ public class AnimatedSprite{
 				player1.evolve(g,starttime1);
 				if(player1.isEvolutionFinished()){
 					int tempX = player1.getPositionX();
-					player1 = new Animation(spriteSheet2, "Gabumon", 2000, 1000, tempX, ground);
+					spriteSheet1=new SpriteSheet("SpriteSheets/GraySpriteSheet.png", 10, 30);
+					spriteSheet1.setOffsets(80, 80);
+					player1 = new Animation(spriteSheet1, "Gray", 2000, 1000, tempX, ground);
 					player1.play();
 				}
 			}else{
