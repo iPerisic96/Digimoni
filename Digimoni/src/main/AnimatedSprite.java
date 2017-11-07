@@ -122,8 +122,9 @@ public class AnimatedSprite{
 		g.setBackground(backgroundColor);
 		g.clearRect(0, 0, sw, sh);
 		
+		//clouds
 		countX += 1;
-		if (countX > 2100){
+		if (countX > 2250){
 			countX = 0;
 		}
 		System.out.println(countX);
@@ -135,16 +136,55 @@ public class AnimatedSprite{
 		g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -countX, 50, null);
 		g.drawImage(clouds.get(1), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() + clouds.get(4).getWidth()  -countX, 50, null);
 		
+		//healthBar1
+		g.setColor(Color.GRAY);
+		g.fillRoundRect(8, 8, 300, 30, 30, 55);
+									
+		g.setColor(Color.GREEN);
+		g.fillRoundRect(8, 8, 300, 30, 30, 55);
 		
+		g.setColor(Color.WHITE);
+		g.drawRoundRect(8, 8, 300, 30, 30, 55);
+						
+		//healthBar2
+		g.setColor(Color.GRAY);
+		g.fillRoundRect(692, 8, 300, 30, 30, 55); //1000-300-8 = 692
+		
+		g.setColor(Color.GREEN);
+		g.fillRoundRect(692, 8, 300, 30, 30, 55);
+		
+		g.setColor(Color.WHITE);
+		g.drawRoundRect(692, 8, 300, 30, 30, 55);
+		
+		//energyBar1
+		
+		g.setColor(Color.WHITE);
+		g.fillRect(20, 48, 100, 20); // y = 8 + 30 + 10
+		
+		g.setColor(Color.GRAY);
+		g.drawRect(20, 48, 100, 20); // y = 8 + 30 + 10
+		
+		//energyBar2
+		
+		g.setColor(Color.WHITE);
+		g.fillRect(880, 48, 100, 20); // y = 8 + 30 + 10, x = 1000-20-100
+
+		g.setColor(Color.GRAY);
+		g.drawRect(880, 48, 100, 20); // y = 8 + 30 + 10
+				
+				
+		//mountains
 		for (int i = 0; i < 3; i++){
 			g.drawImage(mountain, i * mountain.getWidth() , sh - mountain.getHeight() - platform.getHeight(), null);
 		}
 		
+		//platform
 		for (int x = 0; x < sw; x++){
 			g.drawImage(platform, x * (platform.getWidth()-1), sh-platform.getHeight(),  null);
 				
 		}
 		
+		//village
 		for (int y = 0; y < 3; y++){
 			g.drawImage(village, y*(village.getWidth()), sh-village.getHeight()-platform.getHeight(), null);
 		}
