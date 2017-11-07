@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -28,7 +29,10 @@ public class Animation{
 	private boolean isFalling = false;
 	private String currentActiveAnimation = "";
 	private int animCounter=-1;
-	
+	private String orientation="";
+	private boolean isEvolving=false;
+	private boolean isEvolutionFinished=false;
+	private boolean isBeingBorn=true;
 	
 	public ArrayList<SpriteMove> allocateMoves(String character) throws NumberFormatException, IOException{
 		ArrayList<SpriteMove> methodSpriteMoves = new ArrayList<>();
@@ -88,15 +92,46 @@ public class Animation{
 			}
 		}
 	}
-	
+	public void evolve(Graphics2D g, long starttime){
+		long razlika = System.currentTimeMillis()-starttime;
+		System.out.println("RUPA U VREMENU: "+razlika);
+		if(razlika<700){
+			mySheet.grayScale(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<1400){
+			mySheet.negative(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<2100){
+			mySheet.blinkingNegative(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<2800){
+			mySheet.coloredNoise(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
+		}
+		else if(razlika<4100){
+			mySheet.drawMagicCircle(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
+		}else{
+			isEvolutionFinished=true;
+		}
+	}
+	public void devolve(Graphics2D g, long starttime){
+		long razlika = System.currentTimeMillis()-starttime;
+		System.out.println("RUPA U VREMENU: "+razlika);
+		if(razlika<700){			
+			mySheet.drawMagicCircle(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<1400){
+			mySheet.coloredNoise(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<2100){
+			mySheet.blinkingNegative(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<2800){
+			mySheet.negative(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+		else if(razlika<4100){
+			mySheet.grayScale(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));}
+			else{
+			isBeingBorn=false;
+		}
+	}
 	public void draw1(Graphics g){
 		mySheet.drawTo(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
 	}
 	public void draw2(Graphics g){
 		mySheet.drawToRotated(g, posX, posY, animFrame, animationID, spriteMoves.get(currentMove));
-	}
-	public void evolve(){
-		
 	}
 	
 	public int getAnimation(){
@@ -294,6 +329,65 @@ public class Animation{
 
 	public void setCurrentActiveAnimation(String currentActiveAnimation) {
 		this.currentActiveAnimation = currentActiveAnimation;
+	}
+
+
+
+	public String getOrientation() {
+		return orientation;
+	}
+
+
+
+	public void setOrientation(String orientation) {
+		this.orientation = orientation;
+	}
+	
+	public void switchOrientation(){
+		if(orientation.equals("RIGHT")){
+			orientation="LEFT";
+		}else if(orientation.equals("LEFT")){
+			orientation="RIGHT";
+		}else{
+			System.out.println("Orientacija nepostojeca.");
+			orientation="";
+		}
+	}
+
+
+
+	public boolean isEvolving() {
+		return isEvolving;
+	}
+
+
+
+	public void setEvolving(boolean isEvolving) {
+		this.isEvolving = isEvolving;
+	}
+
+
+
+	public boolean isEvolutionFinished() {
+		return isEvolutionFinished;
+	}
+
+
+
+	public void setEvolutionFinished(boolean isEvolutionFinished) {
+		this.isEvolutionFinished = isEvolutionFinished;
+	}
+
+
+
+	public boolean isBeingBorn() {
+		return isBeingBorn;
+	}
+
+
+
+	public void setBeingBorn(boolean isBeingBorn) {
+		this.isBeingBorn = isBeingBorn;
 	}
 	
 }
