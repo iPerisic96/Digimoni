@@ -53,6 +53,12 @@ public class OpeningScreen extends GameFrame
 
 	boolean backcontrols=false;
 	
+	Fade voz;
+	static boolean binary;
+	
+	boolean fadeOut;
+	float alphaFadeOut=1;
+	
 	
 	public static class Star
 	{
@@ -99,6 +105,8 @@ public class OpeningScreen extends GameFrame
 		setUpdateRate(60);
 		
 
+		voz = new Fade(sizeX, sizeY);
+		
 		try {
 			animatedSprite  = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombined.png","SpriteSheets/GabumonSpriteSheet.png");
 		} catch (NumberFormatException | IOException e) {
@@ -170,7 +178,15 @@ public class OpeningScreen extends GameFrame
 				e.printStackTrace();
 			} return;
 		}
-		//button.render(g, sw, sh);
+		
+		
+		
+		if(binary){
+			if(fadeOut==false){
+				voz.renderFadeOut(g, alphaFadeOut);
+			}
+			
+		
 		for(Star s : stars)
 		{	
 			float sX1 = sw / 2 + s.posX * (400.0f / s.posZ);
@@ -222,6 +238,7 @@ public class OpeningScreen extends GameFrame
 			ivan.render(g, sw, sh);
 			dubravka.render(g, sw, sh);
 		}
+		}else voz.render(g, sw, sh);
 		
 	}
 
@@ -233,6 +250,16 @@ public class OpeningScreen extends GameFrame
 			return;
 		}
 		
+		
+		if(binary){
+			
+	
+			if(fadeOut==false){
+				alphaFadeOut-=0.008f;
+				if(alphaFadeOut<=0f){
+					fadeOut=true;
+				}
+			}
 		for(Star s : stars)
 		{
 			s.posZ -= speed;
@@ -274,7 +301,9 @@ public class OpeningScreen extends GameFrame
 			ivan.update(getMouseX(), getMouseY());
 			dubravka.update(getMouseX(), getMouseY());
 			andrej.update(getMouseX(), getMouseY());
-		}	
+		}
+		}else voz.update();
+		
 	}
 	
 	private void genEx(float cX, float cY, float radius, int life, int count)
@@ -367,6 +396,8 @@ public class OpeningScreen extends GameFrame
 			return true;
 		}else return false;
 	}
+	
+	
 	
 	public BufferedImage negativ(BufferedImage i){
 		WritableRaster source = i.getRaster();
