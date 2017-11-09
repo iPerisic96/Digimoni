@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import javafx.beans.property.BooleanProperty;
 
 
 public class Animation{
@@ -33,6 +36,9 @@ public class Animation{
 	private boolean isEvolving=false;
 	private boolean isEvolutionFinished=false;
 	private boolean isBeingBorn=true;
+	private  boolean[] isMoveActive = new boolean[18];
+	private int tempCurrentMove=0;
+	private int tempLastMove=-1;
 	
 	public ArrayList<SpriteMove> allocateMoves(String character) throws NumberFormatException, IOException{
 		ArrayList<SpriteMove> methodSpriteMoves = new ArrayList<>();
@@ -73,7 +79,8 @@ public class Animation{
 		energyPoints = energy;
 		spriteMoves=allocateMoves(character);
 		currentMove=0;
-		
+		Arrays.fill(isMoveActive, false);
+		isMoveActive[0]=true;
 
 	}
 	
@@ -85,9 +92,21 @@ public class Animation{
 				if(animFrame+1!=spriteMoves.get(move).getLengthofmove()){
 					isAnimationActive=true;
 				}else isAnimationActive=false;
+				
 				animFrame = (animFrame+1) % spriteMoves.get(move).getLengthofmove();
 				frameCountdown = frameInterval;
 				currentMove=move;
+				/*tempLastMove=tempCurrentMove;
+				tempCurrentMove=animFrame+1;
+				System.out.println("TEMPL: "+tempLastMove+ " TEMPC:" +tempCurrentMove);
+				System.out.println("TRENUTNO SE IZVRSAVA SPRITE BROJ "+animFrame);*/
+				if(animFrame+1==spriteMoves.get(move).getLengthofmove()/*tempLastMove>tempCurrentMove*/){
+					System.out.println("TREBA DA GA SETUJEM");
+					if(move!=0){isMoveActive[move]=false;}
+					
+					/*tempLastMove=-1;
+					tempCurrentMove=0;*/
+				}
 				
 			}
 		}
@@ -388,6 +407,28 @@ public class Animation{
 
 	public void setBeingBorn(boolean isBeingBorn) {
 		this.isBeingBorn = isBeingBorn;
+	}
+
+
+
+	public boolean getIsMoveActive(int move) {
+		return isMoveActive[move];
+	}
+
+
+
+	public void setIsMoveActive(boolean isMoveActive, int move) {
+		this.isMoveActive[move] = isMoveActive;
+	}
+	
+	public int countOfActiveMoves(){
+		int zbir=0;
+		for(int i=0;i<isMoveActive.length;i++){
+			if(isMoveActive[i]){
+				zbir++;
+			}
+		}
+		return zbir;
 	}
 	
 }

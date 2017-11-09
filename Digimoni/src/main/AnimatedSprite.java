@@ -240,8 +240,12 @@ public class AnimatedSprite{
 	public void update(boolean h, boolean c, boolean v, boolean f, boolean g, boolean e, boolean l, boolean la2, boolean ha2, boolean sa2, boolean ua2, boolean e2, boolean d, boolean a, boolean s, boolean w, boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
 		
 		//Player1
+		if(player1.isEvolving()==false&&player1.countOfActiveMoves()==1){
+			player1.move(0,0);
+			player1.update(IDLE);
+		}
 		
-		if(d){
+		else if(d){
 			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
 				player1.update(RUN);
 
@@ -261,103 +265,113 @@ public class AnimatedSprite{
 			player1.move(0, 0);
 			player1.update(GUARD);
 		}
-		if(w){
-			//NEEDS FIXING
+		else if(h){
+			player1.move(0, 0);
+			player1.update(ENERGYCHANNEL);
+		}
+		
+		if(player1.getIsMoveActive(LIGHTATTACK)&&player1.countOfActiveMoves()!=1){
+			player1.move(0, 0);
+			player1.update(LIGHTATTACK);
+		}
+		else if(player1.getIsMoveActive(HEAVYATTACK)&&player1.countOfActiveMoves()!=1){
+			player1.move(0, 0);
+			player1.update(HEAVYATTACK);
+		}
+		else if(player1.getIsMoveActive(SPECIAL)&&player1.countOfActiveMoves()!=1){
+			player1.move(0, 0);
+			player1.update(SPECIAL);
+		}
+		else if(player1.getIsMoveActive(ULTIMATE)&&player1.countOfActiveMoves()!=1){
+			player1.move(0, 0);
+			player1.update(ULTIMATE);
+		}
+		else if(player1.getIsMoveActive(TAUNT)&&player1.countOfActiveMoves()!=1){
+			player1.move(0, 0);
+			player1.update(TAUNT);
 			
-			if(player1.isJumping()){
-				player1.setOnGround(false);
-				jump_speed1-=gravity;
-				if(jump_speed1<0){
-					jump_speed1=0;
-					player1.setFalling(true);
-					player1.setJumping(false);
-					player1.move(0, 0);
-					System.out.println("JMP SPEED: "+jump_speed1);
-					player1.update(JUMP);
-				}else{
-					if(w&&d){
-
-						player1.move(0, -jump_speed1);
-						System.out.println("JMPMOVRIGHT SPEED: "+jump_speed1);
-						player1.update(JUMP);}
-					else{
-					player1.move(0, -jump_speed1);
-					System.out.println("JMP SPEED: "+jump_speed1);
-					player1.update(JUMP);}
-				}if(w&&a){
+		}
+		
+		System.out.println("COUNTISNOW: "+player1.countOfActiveMoves());
+		
+		/*if(player1.isJumping()&&player1.getIsMoveActive(JUMP)){
+			player1.setOnGround(false);
+			jump_speed1-=gravity;
+			if(jump_speed1<0){
+				jump_speed1=0;
+				player1.setFalling(true);
+				player1.setJumping(false);
+				player1.move(0, 0);
+				System.out.println("JMP SPEED: "+jump_speed1);
+				player1.update(JUMP);
+			}else{
+				if(w&&d){
 
 					player1.move(0, -jump_speed1);
-					System.out.println("JMPMOVLEFT SPEED: "+jump_speed1);
+					System.out.println("JMPMOVRIGHT SPEED: "+jump_speed1);
 					player1.update(JUMP);}
 				else{
 				player1.move(0, -jump_speed1);
 				System.out.println("JMP SPEED: "+jump_speed1);
 				player1.update(JUMP);}
-			
-			}else if(player1.isFalling()){
-				jump_speed1+=gravity;
-				if(jump_speed1>PLAYER_SPEED&&player1.getPositionY()>ground){
-					player1.setPosition(player1.getPositionX(), ground);
-					jump_speed1=PLAYER_SPEED;
-					player1.setFalling(false);
-					player1.setJumping(true);
-					player1.move(0, 0);
-					System.out.println("FALL SPEED: "+jump_speed1);
-					player1.update(JUMP);
-					
-				}else{
-					if(w&&d){
+			}if(w&&a){
 
-						player1.move(0, jump_speed1);
-						System.out.println("FALLMOVRIGHT SPEED: "+jump_speed1);
-						player1.update(JUMP);
-					}else{
-					player1.move(0, jump_speed1);
-					System.out.println("FALL SPEED: "+jump_speed1);
-					player1.update(JUMP);}
-				}
-				if(w&&a){
+				player1.move(0, -jump_speed1);
+				System.out.println("JMPMOVLEFT SPEED: "+jump_speed1);
+				player1.update(JUMP);}
+			else{
+			player1.move(0, -jump_speed1);
+			System.out.println("JMP SPEED: "+jump_speed1);
+			player1.update(JUMP);}
+		
+		}
+		if(player1.isFalling()){
+			System.out.println("USLISMOOoooooooooooooooooooooooooooooooooooooooooooooooooooooooooO");
+			jump_speed1+=gravity;
+			if(jump_speed1>PLAYER_SPEED&&player1.getPositionY()>ground){
+				player1.setPosition(player1.getPositionX(), ground);
+				jump_speed1=PLAYER_SPEED;
+				player1.setFalling(false);
+				player1.setJumping(true);
+				player1.move(0, 0);
+				System.out.println("FALL SPEED: "+jump_speed1);
+				player1.update(JUMP);
+				
+			}else{
+				if(w&&d){
 
 					player1.move(0, jump_speed1);
-					System.out.println("FALLMOVLEFT SPEED: "+jump_speed1);
+					System.out.println("FALLMOVRIGHT SPEED: "+jump_speed1);
 					player1.update(JUMP);
 				}else{
-					player1.move(0, jump_speed1);
-					System.out.println("FALL SPEED: "+jump_speed1);
-					player1.update(JUMP);}
-				}
+				player1.move(0, jump_speed1);
+				System.out.println("FALL SPEED: "+jump_speed1);
+				player1.update(JUMP);}
+			}
+			if(w&&a){
+
+				player1.move(0, jump_speed1);
+				System.out.println("FALLMOVLEFT SPEED: "+jump_speed1);
+				player1.update(JUMP);
+			}else{
+				player1.move(0, jump_speed1);
+				System.out.println("FALL SPEED: "+jump_speed1);
+				player1.update(JUMP);}
+			}
+		 
+		/*
+		
+		if(w){
+			//NEEDS FIXING
 			
 			
-		}
-		else if(h){
-			player1.move(0, 0);
-			player1.update(ENERGYCHANNEL);
-		}
-		else if(c){
-			player1.move(0, 0);
-			player1.update(LIGHTATTACK);
-		}
-		else if(v){
-			player1.move(0, 0);
-			player1.update(HEAVYATTACK);
-		}
-		else if(f){
-			player1.move(0, 0);
-			player1.update(SPECIAL);
-		}
-		else if(g){
-			player1.move(0, 0);
-			player1.update(ULTIMATE);
-		}
+		
 		else if(e){
 			player1.move(0, 0);
 			player1.update(TAUNT);
 			
 		}
-		else if(pressed==false&&player1.isEvolving()==false){
-			player1.move(0,0);
-			player1.update(IDLE);
-		}
+	
 		
 
 		//Player2
@@ -424,6 +438,7 @@ public class AnimatedSprite{
 			player2.move(0,0);
 			player2.update(IDLE);
 		}
+		*/
 		
 		playerleft=player1.getPositionX();
 		playerright=player2.getPositionX();
@@ -452,6 +467,9 @@ public class AnimatedSprite{
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(JUMP).getPosinsheet());
 			player1.play();
+			player1.setIsMoveActive(true,JUMP);
+			
+
 
 		}
 		else if(keyCode == KeyEvent.VK_D){
@@ -461,6 +479,7 @@ public class AnimatedSprite{
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(RUN).getPosinsheet());
 			player1.play();
+			player1.setIsMoveActive(true,RUN);
 
 		}
 		else if(keyCode == KeyEvent.VK_A){
@@ -470,6 +489,8 @@ public class AnimatedSprite{
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(WALK).getPosinsheet());
 			player1.play();
+			player1.setIsMoveActive(true,WALK);
+
 
 		}
 		else if(keyCode == KeyEvent.VK_S){
@@ -478,7 +499,10 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(GUARD).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,GUARD);
+
+
 		}
 		else if(keyCode == KeyEvent.VK_H){
 			if(keyCode!=lastKey){
@@ -486,7 +510,10 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(ENERGYCHANNEL).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,ENERGYCHANNEL);
+
+
 		}
 		else if(keyCode == KeyEvent.VK_C){
 			if(keyCode!=lastKey){
@@ -494,7 +521,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(LIGHTATTACK).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,LIGHTATTACK);
+
 		}
 		else if(keyCode == KeyEvent.VK_V){
 			if(keyCode!=lastKey){
@@ -502,7 +531,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(HEAVYATTACK).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,HEAVYATTACK);
+
 		}
 		else if(keyCode == KeyEvent.VK_F){
 			if(keyCode!=lastKey){
@@ -510,23 +541,31 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(SPECIAL).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,SPECIAL);
+
 		}
 		else if(keyCode == KeyEvent.VK_G){
 			if(keyCode!=lastKey){
 				player1.setFrame(0, ULTIMATE);
 				lastKeyPressed(keyCode);
+
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(ULTIMATE).getPosinsheet());
-			player1.play();		
+			player1.play();	
+			player1.setIsMoveActive(true,ULTIMATE);
+
 		}
 		else if(keyCode == KeyEvent.VK_E){
 			if(keyCode!=lastKey){
 				player1.setFrame(0, TAUNT);
 				lastKeyPressed(keyCode);
+				player1.setEvolving(true);
+				
 			}
-			//player1.setAnimation(player1.getSpriteMoves().get(GUARD).getPosinsheet());
-			//player1.play();
+			player1.setAnimation(player1.getSpriteMoves().get(TAUNT).getPosinsheet());
+			player1.play();
+			player1.setIsMoveActive(true, TAUNT);
 			System.out.println("Evoluiram prvi.");
 		}
 		
@@ -627,9 +666,28 @@ public class AnimatedSprite{
 	}
 	
 	//@Override
-	public void handleKeyUp(int keyCode) 
-	{ 
+	public void handleKeyUp(int keyCode) { 
 		//Player1
+		if(keyCode==KeyEvent.VK_D||keyCode==KeyEvent.VK_S||keyCode==KeyEvent.VK_A||keyCode==KeyEvent.VK_H){
+			player1.setIsMoveActive(false, WALK);
+			player1.setIsMoveActive(false, RUN);
+			player1.setIsMoveActive(false, GUARD);
+			player1.setIsMoveActive(false, ENERGYCHANNEL);
+		}
+		if(player1.countOfActiveMoves()==1&&player1.isFalling()==false){
+			lastKey=-1;
+			player1.stop();
+			player1.setAnimation(player1.getSpriteMoves().get(IDLE).getPosinsheet());
+			player1.play();
+			player1.setFrame(0,IDLE);
+		}
+			
+		
+		
+		
+		
+		/*
+		
 		if(player1.isEvolving()==false){
 		if(keyCode==KeyEvent.VK_W){
 			int br=0;
@@ -661,8 +719,7 @@ public class AnimatedSprite{
 			player1.setFrame(0,IDLE);
 		}
 	else if(keyCode == KeyEvent.VK_S || 
-				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_E||/*keyCode == KeyEvent.VK_W ||*/ keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G
-				)
+				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_E||/*keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G)
 		{
 			if(keyCode == KeyEvent.VK_E){player1.setEvolving(true);System.out.println("EVOLUIRAM UPRAVO!1");}
 			lastKey=-1;
@@ -685,5 +742,6 @@ public class AnimatedSprite{
 			player2.play();
 			player2.setFrame(0,IDLE);
 		}
+	*/
 	}
 }

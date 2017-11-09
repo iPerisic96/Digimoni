@@ -335,17 +335,11 @@ public void drawToRotated(Graphics g, int posX, int posY, int frameX, int frameY
 		if(destcornerx%2!=0)destcornerx++;
 		int destcornery=frameH-spriteMove.getSprites().get(frameX).getPxheight()/2;
 		if(destcornery%2!=0)destcornery++;*/
+		int tempFX=frameX%10;
+		int tempFY=frameY;
 		if(frameX>9){
-			frameX=frameX%10;
-			frameY++;
-		}else if(frameX>19&&frameX<30){
-			frameX=frameX%10;
-			frameY+=2;
-		}
-		else if(frameX>29&&frameX<40){
-			frameX=frameX%10;
-			frameY+=3;
-		}
+			tempFY+=frameX/10;}
+
 		
 		//System.out.println("Frame X: "+frameX+" FrameY: "+frameY+" FrameW: "+frameW+" FrameH: "+frameH);
 		//g.drawImage(sheet, posX - offsetX, posY - offsetY, posX - offsetX + frameW-1, posY - offsetY + frameH-1, frameX * frameW+1, frameY * frameH+1, frameX * frameW + frameW-1, frameY * frameH + frameH-1, null);
