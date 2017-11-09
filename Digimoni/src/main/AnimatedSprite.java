@@ -23,17 +23,24 @@ public class AnimatedSprite{
 	private SpriteSheet spriteSheet2;
 	private Animation player1;
 	private Animation player2;
-	private Color backgroundColor = new Color(92, 198, 237);//32,64,0
+	//private Color backgroundColor = new Color(92, 198, 237);//32,64,0
+	
+	private ArrayList<BufferedImage> clouds = new ArrayList<BufferedImage>();
 	
 	private BufferedImage background;
 	private BufferedImage cloud = null;
 	private BufferedImage village = null;
-	private ArrayList<BufferedImage> clouds = new ArrayList<BufferedImage>();
 	private BufferedImage platform = null;
 	private BufferedImage mountain = null;
 	private BufferedImage mountain2;
 	private BufferedImage mountain3;
 	private BufferedImage mountain4;
+	
+	private Mountains mountain0;
+	private Mountains mountain01;
+	private Mountains mountain02;
+	private Mountains mountain03;
+	
 	private int countX = 0;
 	private int countW = 0;
 	private int counter = 0;
@@ -86,7 +93,7 @@ public class AnimatedSprite{
 		
 		village = Util.loadImage("village.png");
 		platform = Util.loadImage("tile.png");
-		mountain = Util.loadImage("mountain.png");
+		//mountain = Util.loadImage("mountain.png");
 		
 	// background ----------------------------------------
 		raster = Util.createRaster(1000, 800, false);
@@ -116,12 +123,8 @@ public class AnimatedSprite{
 			}
 		}
 		background = Util.rasterToImage(raster);
-	// ----------------------------------------------------
 		
 	// mountains ------------------------------------------
-		
-		WritableRaster raster1 = Util.createRaster(1000, 800, true);
-		int rgb1[] = new int[4];
 		
 		int levo [] = new int [3];
 		levo[0] = 199;
@@ -133,157 +136,30 @@ public class AnimatedSprite{
 		desno[1] = 181;
 		desno[2] = 0;
 
-		for(int y = 0; y < raster1.getHeight(); y++)
-		{
-			for(int x = 0; x < raster1.getWidth(); x++)
-			{
-				double sineY = Math.sin(x * 0.005-2) * 20 + 700;
-				
-				double sineY1 = Math.sin(x * 0.005-2) * 50 + 500;
-				
-				double delta = Math.abs(y - sineY);
-				
-				/*if (y > sineY1){
-					double fy = (y%200) / 200.0  ;
-					rgb1[0] = lerp(levo[0], desno[0], fy);
-					rgb1[1] = lerp(levo[1], desno[1], fy);
-					rgb1[2] = lerp(levo[2], desno[2], fy);
-					rgb1[3] = 255;
-				}*/
-				if (y > sineY ){
-					
-					double fy = (y%200) / 200.0  ;
-					rgb1[0] = lerp(levo[0], desno[0], fy);
-					rgb1[1] = lerp(levo[1], desno[1], fy);
-					rgb1[2] = lerp(levo[2], desno[2], fy);
-					rgb1[3] = 255;
-				} else {
-				rgb1[0] = 0;
-				rgb1[1] = 0;
-				rgb1[2] = 56;
-				rgb1[3] = 0;
-				}
-				
-				raster1.setPixel(x, y, rgb1);
-			
-			}
-			
-		}
-		mountain = Util.rasterToImage(raster1);
-		//------------------
-		WritableRaster raster2 = Util.createRaster(1000, 800, true);
-		for(int y = 0; y < raster2.getHeight(); y++)
-		{
-			for(int x = 0; x < raster2.getWidth(); x++)
-			{
-				double sineY = Math.sin(x * 0.005-2) * 40 + 650;
-				
-				//double delta = Math.abs(y - sineY);
-				
-			/*	if (y > sineY){
-					double fy = (y%200) / 200.0  ;
-					rgb1[0] = lerp(levo[0], desno[0], fy);
-					rgb1[1] = lerp(levo[1], desno[1], fy);
-					rgb1[2] = lerp(levo[2], desno[2], fy);
-					rgb1[3] = 255;
-				}*/
-				if (y > sineY ){
-					
-					double fy = (y%300) / 300.0  ;
-					rgb1[0] = lerp(levo[0], desno[0], fy);
-					rgb1[1] = lerp(levo[1], desno[1], fy);
-					rgb1[2] = lerp(levo[2], desno[2], fy);
-					rgb1[3] = 255;
-				} else {
-				rgb1[0] = 0;
-				rgb1[1] = 0;
-				rgb1[2] = 0;
-				rgb1[3] = 0;
-				}
-				
-				raster2.setPixel(x, y, rgb1);
-			
-			}
-			
-		}
-		mountain2 = Util.rasterToImage(raster2);
+		mountain0 = new Mountains(1000, 800, 0.005, -2, 20, 700, levo, desno, 200.0);
+		mountain = mountain0.createMountain();
 		
-		//------------------
-				WritableRaster raster3 = Util.createRaster(1000, 800, true);
-				for(int y = 0; y < raster3.getHeight(); y++)
-				{
-					for(int x = 0; x < raster3.getWidth(); x++)
-					{
-						double sineY = Math.sin(x * 0.006+1) * 40 + 620;
-						
-						//double delta = Math.abs(y - sineY);
-						
-					/*	if (y > sineY){
-							double fy = (y%200) / 200.0  ;
-							rgb1[0] = lerp(levo[0], desno[0], fy);
-							rgb1[1] = lerp(levo[1], desno[1], fy);
-							rgb1[2] = lerp(levo[2], desno[2], fy);
-							rgb1[3] = 255;
-						}*/
-						if (y > sineY ){
-							
-							double fy = (y%400) / 400.0 ;
-							rgb1[0] = lerp(levo[0] + 34, desno[0], fy);
-							rgb1[1] = lerp(levo[1] + 24, desno[1], fy);
-							rgb1[2] = lerp(levo[2] + 81, desno[2], fy);
-							rgb1[3] = 255;
-						} else {
-						rgb1[0] = 0;
-						rgb1[1] = 0;
-						rgb1[2] = 56;
-						rgb1[3] = 0;
-						}
-						
-						raster3.setPixel(x, y, rgb1);
-					
-					}
-					
-				}
-				mountain3 = Util.rasterToImage(raster3);
-				
-				//------------------
-				WritableRaster raster4 = Util.createRaster(1000, 800, true);
-				for(int y = 0; y < raster4.getHeight(); y++)
-				{
-					for(int x = 0; x < raster4.getWidth(); x++)
-					{
-						double sineY = Math.sin(x * 0.02) * 40 + 550;
-						
-						//double delta = Math.abs(y - sineY);
-						
-					/*	if (y > sineY){
-							double fy = (y%200) / 200.0  ;
-							rgb1[0] = lerp(levo[0], desno[0], fy);
-							rgb1[1] = lerp(levo[1], desno[1], fy);
-							rgb1[2] = lerp(levo[2], desno[2], fy);
-							rgb1[3] = 255;
-						}*/
-						if (y > sineY ){
-							
-							double fy = (y%400) / 400.0  ;
-							rgb1[0] = lerp(levo[0]+31, 255, fy);
-							rgb1[1] = lerp(levo[1]-25, 255, fy);
-							rgb1[2] = lerp(levo[2]+59, 255, fy);
-							rgb1[3] = 255;
-						} else {
-						rgb1[0] = 0;
-						rgb1[1] = 0;
-						rgb1[2] = 0;
-						rgb1[3] = 0;
-						}
-						
-						raster4.setPixel(x, y, rgb1);
-					
-					}
-					
-				}
-				mountain4 = Util.rasterToImage(raster4);
-				ImageViewer.showImageWindow(Util.rasterToImage(raster4), "dsadas");
+		mountain01 = new Mountains(1000, 800, 0.005, -2, 40, 650, levo, desno, 300.0);
+		mountain2 = mountain01.createMountain();
+		
+		levo[0] += 34;
+		levo[1] += 24;
+		levo[2] += 81;
+		
+		mountain02 = new Mountains(1000, 800, 0.006, 1, 40, 620, levo, desno, 400.0);
+		mountain3 = mountain02.createMountain();
+
+		levo[0] = 230;
+		levo[1] = 200;
+		levo[2] = 100;
+		
+		desno[0] = 255;
+		desno[1] = 255;
+		desno[2] = 255;
+		
+		
+		mountain03 = new Mountains(1000, 800, 0.02, 0, 40, 550, levo, desno, 400.0);
+		mountain4 = mountain03.createMountain();
 		
 	// ----------------------------------------------------
 		
@@ -341,7 +217,7 @@ public class AnimatedSprite{
 		System.out.println(countX);
 		
 		g.drawImage(clouds.get(0), sw - countX , 50, null);
-		g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - countX, clouds.get(1).getWidth()/2, null);
+		g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - countX-10, clouds.get(1).getWidth()/2, null);
 		g.drawImage(clouds.get(2), sw + clouds.get(2).getWidth() + clouds.get(1).getWidth() - countX, 50, null);
 		g.drawImage(clouds.get(3), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() -countX, 50, null);
 		g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -countX, 50, null);
