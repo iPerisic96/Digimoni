@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -23,6 +24,7 @@ public class AnimatedSprite{
 	private Animation player2;
 	private Color backgroundColor = new Color(92, 198, 237);//32,64,0
 	
+	private BufferedImage background;
 	private BufferedImage cloud = null;
 	private BufferedImage village = null;
 	private ArrayList<BufferedImage> clouds = new ArrayList<BufferedImage>();
@@ -31,6 +33,7 @@ public class AnimatedSprite{
 	private int countX = 0;
 	private int countW = 0;
 	private int counter = 0;
+	private WritableRaster raster;
 	
 	private static final int IDLE = 0;
 	private static final int WALK = 1;
@@ -81,6 +84,91 @@ public class AnimatedSprite{
 		platform = Util.loadImage("tile.png");
 		mountain = Util.loadImage("mountain.png");
 		
+	// background ----------------------------------------
+		raster = Util.createRaster(1000, 800, false);
+		
+		int rgb [] = new int [3];
+		
+		int bottom [] = new int [3];
+		bottom[0] = 255;
+		bottom[1] = 255;
+		bottom[2] = 255;
+		
+		int top [] = new int [3];
+		top[0] = 92;
+		top[1] = 198;
+		top[2] = 237;
+		
+		for (int y = 0; y < raster.getHeight(); y++){
+			for (int x = 0; x < raster.getWidth(); x++){
+				double fy = y / (double)raster.getHeight();
+				
+				rgb[0] = lerp(top[0], bottom[0], fy);
+				rgb[1] = lerp(top[1], bottom[1], fy);
+				rgb[2] = lerp(top[2], bottom[2], fy);
+				
+				raster.setPixel(x, y, rgb);
+				
+			}
+		}
+		background = Util.rasterToImage(raster);
+	// ----------------------------------------------------
+		
+	// mountains ------------------------------------------
+		
+		WritableRaster raster1 = Util.createRaster(1000, 800, true);
+		int rgb1[] = new int[4];
+		
+		int levo [] = new int [3];
+		levo[0] = 199;
+		levo[1] = 225;
+		levo[2] = 31;
+		
+		int desno [] = new int [3];
+		desno[0] = 119;
+		desno[1] = 181;
+		desno[2] = 0;
+
+		for(int y = 0; y < raster1.getHeight(); y++)
+		{
+			for(int x = 0; x < raster1.getWidth(); x++)
+			{
+				double sineY = Math.sin(x * 0.005-2) * 20 + 700;
+				
+				double sineY1 = Math.sin(x * 0.005-2) * 50 + 500;
+				
+				double delta = Math.abs(y - sineY);
+				
+				if (y > sineY1){
+					double fy = (y%200) / 200.0  ;
+					rgb1[0] = lerp(levo[0], desno[0], fy);
+					rgb1[1] = lerp(levo[1], desno[1], fy);
+					rgb1[2] = lerp(levo[2], desno[2], fy);
+					rgb1[3] = 255;
+				}
+				if (y > sineY ){
+					
+					double fy = (y%200) / 200.0  ;
+					rgb1[0] = lerp(levo[0], desno[0], fy);
+					rgb1[1] = lerp(levo[1], desno[1], fy);
+					rgb1[2] = lerp(levo[2], desno[2], fy);
+					rgb1[3] = 255;
+				} else {
+				rgb1[0] = 0;
+				rgb1[1] = 0;
+				rgb1[2] = 56;
+				rgb1[3] = 0;
+				}
+				
+				raster1.setPixel(x, y, rgb1);
+			
+			}
+			
+		}
+		//mountain = Util.rasterToImage(raster1);
+		
+	// ----------------------------------------------------
+		
 		spriteSheet1 = new SpriteSheet(firstPlayerSpriteSheet, 10, 30);
 		spriteSheet1.setOffsets(50, 50);
 		
@@ -99,6 +187,10 @@ public class AnimatedSprite{
 		player2.setOrientation("RIGHT");
 		
 		//startThread();
+	}
+	
+	public int lerp (int a, int b, double x){
+		return (int)(a + (b - a) * x);
 	}
 
 	
@@ -119,8 +211,9 @@ public class AnimatedSprite{
 	 
 	public void render(Graphics2D g, int sw, int sh) throws NumberFormatException, IOException{
 		
-		g.setBackground(backgroundColor);
+		//g.setBackground(backgroundColor);
 		g.clearRect(0, 0, sw, sh);
+		g.drawImage(background, 0, 0, null);
 		
 		//clouds
 		countX += 1;
@@ -161,6 +254,9 @@ public class AnimatedSprite{
 		g.setColor(Color.WHITE);
 		g.fillRect(20, 48, 100, 20); // y = 8 + 30 + 10
 		
+		g.setColor(Color.RED);
+		g.drawLine(70, 68, 70, 48);  //20+50
+		
 		g.setColor(Color.GRAY);
 		g.drawRect(20, 48, 100, 20); // y = 8 + 30 + 10
 		
@@ -168,6 +264,9 @@ public class AnimatedSprite{
 		
 		g.setColor(Color.WHITE);
 		g.fillRect(880, 48, 100, 20); // y = 8 + 30 + 10, x = 1000-20-100
+		
+		g.setColor(Color.RED);
+		g.drawLine(930, 68, 930, 48);  //880+50
 
 		g.setColor(Color.GRAY);
 		g.drawRect(880, 48, 100, 20); // y = 8 + 30 + 10
@@ -175,7 +274,7 @@ public class AnimatedSprite{
 				
 		//mountains
 		for (int i = 0; i < 3; i++){
-			g.drawImage(mountain, i * mountain.getWidth() , sh - mountain.getHeight() - platform.getHeight(), null);
+			g.drawImage(mountain, i * mountain.getWidth() , sh - mountain.getHeight(), null);
 		}
 		
 		//platform
