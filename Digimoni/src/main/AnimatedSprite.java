@@ -80,6 +80,7 @@ public class AnimatedSprite{
 	
     private static int lastKey = -1;
 
+    private boolean isGamePaused=false;
 	
 	public AnimatedSprite(String firstPlayerSpriteSheet, String secondPlayerSpriteSheet) throws NumberFormatException, IOException{
 		
@@ -329,7 +330,10 @@ public class AnimatedSprite{
 				player2.draw1(g);
 			}
 		}
-
+		if(isGamePaused==true){
+			
+		}
+		
 	}
 	
 	
@@ -473,25 +477,35 @@ public class AnimatedSprite{
 		}
 		else if(l){
 			player2.move(0, 0);
+			player2.channelingEnergy();
 			player2.update(ENERGYCHANNEL);
 		}
 		
 		if(player2.getIsMoveActive(LIGHTATTACK)&&player2.countOfActiveMoves()!=1){
 			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
-				player2.beingDamaged(player1.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
+				player1.beingDamaged(player2.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
 			}
 			player2.move(0, 0);
 			player2.update(LIGHTATTACK);
 		}
 		else if(player2.getIsMoveActive(HEAVYATTACK)&&player2.countOfActiveMoves()!=1){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player1.beingDamaged(player2.getSpriteMoves().get(HEAVYATTACK).getMovedmg());
+			}
 			player2.move(0, 0);
 			player2.update(HEAVYATTACK);
 		}
 		else if(player2.getIsMoveActive(SPECIAL)&&player2.countOfActiveMoves()!=1){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player1.beingDamaged(player2.getSpriteMoves().get(SPECIAL).getMovedmg());
+			}
 			player2.move(0, 0);
 			player2.update(SPECIAL);
 		}
 		else if(player2.getIsMoveActive(ULTIMATE)&&player2.countOfActiveMoves()!=1){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player1.beingDamaged(player2.getSpriteMoves().get(ULTIMATE).getMovedmg());
+			}
 			player2.move(0, 0);
 			player2.update(ULTIMATE);
 		}
@@ -706,7 +720,7 @@ public class AnimatedSprite{
 	{ 
 		
 		//Player1
-		
+		if(!player1.isDead()&&!player2.isDead()||!isGamePaused){
 		if(keyCode == KeyEvent.VK_W){
 			if(keyCode!=lastKey){
 				player1.setFrame(0, JUMP);
@@ -927,7 +941,18 @@ public class AnimatedSprite{
 			System.out.println("Evoluiram drugi.");
 		}
 		
-		
+		}
+		if(keyCode == KeyEvent.VK_ESCAPE){
+			System.exit(1);
+		}
+		if(keyCode==KeyEvent.VK_P){
+			if(isGamePaused==false){
+				isGamePaused=true;
+			}
+			else{
+				isGamePaused=false;
+			}
+		}
 	}
 	
 	//@Override
