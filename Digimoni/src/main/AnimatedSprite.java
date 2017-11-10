@@ -424,18 +424,21 @@ public class AnimatedSprite{
 				player1.stop();
 				player1.setAnimation(player1.getSpriteMoves().get(LOSE).getPosinsheet());
 				player1.play();
+				player1.setIsMoveActive(true, LOSE);
 			}
-			player1.move(0, 0);
+			player1.setDeathCounter(player1.getDeathCounter()+1);
+			if(player1.getDeathCounter()>player1.getSpriteMoves().get(LOSE).getLengthofmove())player1.setDeathCounter(-1);
 			player1.update(LOSE);
+			
 		}else if(!player1.isDead()){
 			if(player1.getDeathCounter()<0){
 				player1.stop();
 				player1.setAnimation(player1.getSpriteMoves().get(WIN).getPosinsheet());
 				player1.play();
 				player1.setIsMoveActive(true, WIN);
-
 			}
-			player1.move(0, 0);
+			player1.setDeathCounter(player1.getDeathCounter()+1);
+			if(player1.getDeathCounter()>player1.getSpriteMoves().get(WIN).getLengthofmove())player1.setDeathCounter(-1);
 			player1.update(WIN);
 		}
 		System.out.println("COUNTISNOW: "+player1.countOfActiveMoves());
@@ -519,17 +522,21 @@ public class AnimatedSprite{
 				player2.stop();
 				player2.setAnimation(player2.getSpriteMoves().get(LOSE).getPosinsheet());
 				player2.play();
+				player2.setIsMoveActive(true, LOSE);
 			}
-			player2.move(0, 0);
+			player2.setDeathCounter(player2.getDeathCounter()+1);
+			if(player2.getDeathCounter()>player2.getSpriteMoves().get(LOSE).getLengthofmove())player2.setDeathCounter(-1);
 			player2.update(LOSE);
 		}else if(!player2.isDead()){
+			player1.setDeathCounter(player1.getDeathCounter()+1);
 			if(player2.getDeathCounter()<0){
 				player2.stop();
 				player2.setAnimation(player2.getSpriteMoves().get(WIN).getPosinsheet());
 				player2.play();
 				player2.setIsMoveActive(true, WIN);
 			}
-			player2.move(0, 0);
+			player2.setDeathCounter(player2.getDeathCounter()+1);
+			if(player2.getDeathCounter()>player2.getSpriteMoves().get(WIN).getLengthofmove())player2.setDeathCounter(-1);
 			player2.update(WIN);
 			
 		}
