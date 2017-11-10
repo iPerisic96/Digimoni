@@ -460,7 +460,9 @@ public class AnimatedSprite{
 	
 	public void update(boolean h, boolean c, boolean v, boolean f, boolean g, boolean e, boolean l, boolean la2, boolean ha2, boolean sa2, boolean ua2, boolean e2, boolean d, boolean a, boolean s, boolean w, boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
 		
+		
 		//Player1
+		if(!player1.isDead()&&!player2.isDead()){
 		if(player1.isEvolving()==false&&player1.countOfActiveMoves()==1){
 			player1.move(0,0);
 			player1.update(IDLE);
@@ -488,22 +490,35 @@ public class AnimatedSprite{
 		}
 		else if(h){
 			player1.move(0, 0);
+			player1.channelingEnergy();
 			player1.update(ENERGYCHANNEL);
 		}
 		
 		if(player1.getIsMoveActive(LIGHTATTACK)&&player1.countOfActiveMoves()!=1){
+			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
+			}
 			player1.move(0, 0);
 			player1.update(LIGHTATTACK);
 		}
 		else if(player1.getIsMoveActive(HEAVYATTACK)&&player1.countOfActiveMoves()!=1){
+			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(HEAVYATTACK).getMovedmg());
+			}
 			player1.move(0, 0);
 			player1.update(HEAVYATTACK);
 		}
 		else if(player1.getIsMoveActive(SPECIAL)&&player1.countOfActiveMoves()!=1){
+			if(player1.getEnergyPoints()>=250&&player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(SPECIAL).getMovedmg());
+			}
 			player1.move(0, 0);
 			player1.update(SPECIAL);
 		}
 		else if(player1.getIsMoveActive(ULTIMATE)&&player1.countOfActiveMoves()!=1){
+			if(player1.getEnergyPoints()==player1.getMaxEnergyPoints()&&player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(ULTIMATE).getMovedmg());
+			}
 			player1.move(0, 0);
 			player1.update(ULTIMATE);
 		}
@@ -512,8 +527,139 @@ public class AnimatedSprite{
 			player1.update(TAUNT);
 			
 		}
-		
+		if(player1.isFalling()||player1.isJumping()){
+			player1.setVelY(player1.getVelY() + gravity);
+			if(player1.getVelY()>PLAYER_SPEED){
+				player1.setVelY(PLAYER_SPEED);
+			}
+		}
+		if(player1.getPositionY()>ground){
+			player1.setPosition(player1.getPositionX(), ground);
+			player1.setVelY(0);
+			player1.setJumping(false);
+			player1.setFalling(false);
+			player1.setAnimation(player1.getSpriteMoves().get(IDLE).getPosinsheet());
+			player1.play();		}
+		else{
+			player1.setFalling(true);
+		}
+		}else if(player1.isDead()){
+			if(player1.getDeathCounter()<0){
+				player1.stop();
+				player1.setAnimation(player1.getSpriteMoves().get(LOSE).getPosinsheet());
+				player1.play();
+			}
+			player1.move(0, 0);
+			player1.update(LOSE);
+		}else if(!player1.isDead()){
+			if(player1.getDeathCounter()<0){
+				player1.stop();
+				player1.setAnimation(player1.getSpriteMoves().get(WIN).getPosinsheet());
+				player1.play();
+				player1.setIsMoveActive(true, WIN);
+
+			}
+			player1.move(0, 0);
+			player1.update(WIN);
+		}
 		System.out.println("COUNTISNOW: "+player1.countOfActiveMoves());
+		
+		//Player 2
+		
+		if(!player1.isDead()&&!player2.isDead()){
+		if(player2.isEvolving()==false&&player2.countOfActiveMoves()==1){
+			player2.move(0,0);
+			player2.update(IDLE);
+		}
+		
+		else if(right){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player2.update(RUN);
+
+			}
+			else{
+				player2.move(PLAYER_SPEED, 0);
+				player2.update(RUN);
+			}
+			
+		}
+		else if(left){
+			
+			player2.move(-PLAYER_SPEED, 0);
+			player2.update(WALK);
+		}
+		else if(down){
+			player2.move(0, 0);
+			player2.update(GUARD);
+		}
+		else if(l){
+			player2.move(0, 0);
+			player2.update(ENERGYCHANNEL);
+		}
+		
+		if(player2.getIsMoveActive(LIGHTATTACK)&&player2.countOfActiveMoves()!=1){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
+			}
+			player2.move(0, 0);
+			player2.update(LIGHTATTACK);
+		}
+		else if(player2.getIsMoveActive(HEAVYATTACK)&&player2.countOfActiveMoves()!=1){
+			player2.move(0, 0);
+			player2.update(HEAVYATTACK);
+		}
+		else if(player2.getIsMoveActive(SPECIAL)&&player2.countOfActiveMoves()!=1){
+			player2.move(0, 0);
+			player2.update(SPECIAL);
+		}
+		else if(player2.getIsMoveActive(ULTIMATE)&&player2.countOfActiveMoves()!=1){
+			player2.move(0, 0);
+			player2.update(ULTIMATE);
+		}
+		else if(player2.getIsMoveActive(TAUNT)&&player2.countOfActiveMoves()!=1){
+			player2.move(0, 0);
+			player2.update(TAUNT);
+			
+		}
+		if(player2.isFalling()||player2.isJumping()){
+			player2.setVelY(player2.getVelY() + gravity);
+			if(player2.getVelY()>PLAYER_SPEED){
+				player2.setVelY(PLAYER_SPEED);
+			}
+		}
+		if(player2.getPositionY()>ground){
+			player2.setPosition(player2.getPositionX(), ground);
+			player2.setVelY(0);
+			player2.setJumping(false);
+			player2.setFalling(false);
+			player2.setAnimation(player2.getSpriteMoves().get(IDLE).getPosinsheet());
+			player2.play();
+		}
+		else{
+			player2.setFalling(true);
+		}
+		}else if(player2.isDead()){
+			if(player2.getDeathCounter()<0){
+				player2.stop();
+				player2.setAnimation(player2.getSpriteMoves().get(LOSE).getPosinsheet());
+				player2.play();
+			}
+			player2.move(0, 0);
+			player2.update(LOSE);
+		}else if(!player2.isDead()){
+			if(player2.getDeathCounter()<0){
+				player2.stop();
+				player2.setAnimation(player2.getSpriteMoves().get(WIN).getPosinsheet());
+				player2.play();
+				player2.setIsMoveActive(true, WIN);
+			}
+			player2.move(0, 0);
+			player2.update(WIN);
+			
+		}
+		
+		playerleft=player1.getPositionX();
+		playerright=player2.getPositionX();
 		
 		/*if(player1.isJumping()&&player1.getIsMoveActive(JUMP)){
 			player1.setOnGround(false);
@@ -660,9 +806,6 @@ public class AnimatedSprite{
 			player2.update(IDLE);
 		}
 		*/
-		
-		playerleft=player1.getPositionX();
-		playerright=player2.getPositionX();
 	}
 
 	/*@Override
@@ -688,8 +831,8 @@ public class AnimatedSprite{
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(JUMP).getPosinsheet());
 			player1.play();
-			player1.setIsMoveActive(true,JUMP);
-			
+			player1.setVelY(-3);
+			player1.setJumping(true);
 
 
 		}
@@ -803,7 +946,8 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(JUMP).getPosinsheet());
 			player2.play();
-
+			player2.setVelY(-3);
+			player2.setJumping(true);
 		}
 		else if(keyCode == KeyEvent.VK_RIGHT){
 			if(keyCode!=lastKey){
@@ -812,6 +956,7 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(WALK).getPosinsheet());
 			player2.play();
+			player2.setIsMoveActive(true, WALK);
 
 		}
 		else if(keyCode == KeyEvent.VK_LEFT){
@@ -821,6 +966,8 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(RUN).getPosinsheet());
 			player2.play();
+			player2.setIsMoveActive(true, RUN);
+
 
 		}
 		else if(keyCode == KeyEvent.VK_DOWN){
@@ -830,6 +977,7 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(GUARD).getPosinsheet());
 			player2.play();		
+			player2.setIsMoveActive(true, GUARD);
 
 
 		}
@@ -840,6 +988,8 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(ENERGYCHANNEL).getPosinsheet());
 			player2.play();
+			player2.setIsMoveActive(true, ENERGYCHANNEL);
+
 		}
 		else if(keyCode == KeyEvent.VK_SLASH){
 			if(keyCode!=lastKey){
@@ -847,7 +997,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(LIGHTATTACK).getPosinsheet());
-			player2.play();		
+			player2.play();
+			player2.setIsMoveActive(true, LIGHTATTACK);
+
 		}
 		else if(keyCode == KeyEvent.VK_PERIOD){
 			if(keyCode!=lastKey){
@@ -855,7 +1007,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(HEAVYATTACK).getPosinsheet());
-			player2.play();		
+			player2.play();	
+			player2.setIsMoveActive(true, HEAVYATTACK);
+	
 		}
 		else if(keyCode == KeyEvent.VK_QUOTE){
 			if(keyCode!=lastKey){
@@ -863,7 +1017,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(SPECIAL).getPosinsheet());
-			player2.play();		
+			player2.play();	
+			player2.setIsMoveActive(true, SPECIAL);
+
 		}
 		else if(keyCode == KeyEvent.VK_SEMICOLON){
 			if(keyCode!=lastKey){
@@ -872,14 +1028,19 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(ULTIMATE).getPosinsheet());
 			player2.play();		
+			player2.setIsMoveActive(true, ULTIMATE);
+
 		}
 		else if(keyCode == KeyEvent.VK_CLOSE_BRACKET){
 			if(keyCode!=lastKey){
 				player2.setFrame(0, TAUNT);
 				lastKeyPressed(keyCode);
+				player2.setEvolving(true);
 			}
 			//player2.setAnimation(player2.getSpriteMoves().get(GUARD).getPosinsheet());
 			//player2.play();
+			player2.setIsMoveActive(true, TAUNT);
+
 			System.out.println("Evoluiram drugi.");
 		}
 		
@@ -895,14 +1056,26 @@ public class AnimatedSprite{
 			player1.setIsMoveActive(false, GUARD);
 			player1.setIsMoveActive(false, ENERGYCHANNEL);
 		}
-		if(player1.countOfActiveMoves()==1&&player1.isFalling()==false){
+		if(player1.countOfActiveMoves()==1){
 			lastKey=-1;
 			player1.stop();
 			player1.setAnimation(player1.getSpriteMoves().get(IDLE).getPosinsheet());
 			player1.play();
 			player1.setFrame(0,IDLE);
 		}
-			
+		if(keyCode==KeyEvent.VK_RIGHT||keyCode==KeyEvent.VK_DOWN||keyCode==KeyEvent.VK_LEFT||keyCode==KeyEvent.VK_L){
+			player2.setIsMoveActive(false, WALK);
+			player2.setIsMoveActive(false, RUN);
+			player2.setIsMoveActive(false, GUARD);
+			player2.setIsMoveActive(false, ENERGYCHANNEL);
+		}
+		if(player2.countOfActiveMoves()==1){
+			lastKey=-1;
+			player2.stop();
+			player2.setAnimation(player2.getSpriteMoves().get(IDLE).getPosinsheet());
+			player2.play();
+			player2.setFrame(0,IDLE);
+		}	
 		
 		
 		

@@ -2,6 +2,7 @@ package main;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.datatransfer.FlavorListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -23,12 +24,14 @@ public class Animation{
 	private int frameInterval = 5;
 	private int frameCountdown=0;
 	private int currentMove;
-	private int healthPoints;
+	private int maxHealthPoints;
+	private int maxEnergyPoints;
+	private int damageTaken;
 	private int energyPoints;
 	private String characterName;
 	private boolean isAnimationActive = false;
 	private boolean isOnGround = true;
-	private boolean isJumping = true;
+	private boolean isJumping = false;
 	private boolean isFalling = false;
 	private String currentActiveAnimation = "";
 	private int animCounter=-1;
@@ -39,6 +42,10 @@ public class Animation{
 	private  boolean[] isMoveActive = new boolean[18];
 	private int tempCurrentMove=0;
 	private int tempLastMove=-1;
+	private float velY=0;
+	private float velX=0;
+	private boolean isDead=false;
+	private int deathCounter=-1;
 	
 	public ArrayList<SpriteMove> allocateMoves(String character) throws NumberFormatException, IOException{
 		ArrayList<SpriteMove> methodSpriteMoves = new ArrayList<>();
@@ -75,13 +82,34 @@ public class Animation{
 		posY = Y;
 		mySheet = sheet;
 		characterName = character;
-		healthPoints = health;
-		energyPoints = energy;
+		maxHealthPoints = health;
+		damageTaken = 0;
+		maxEnergyPoints = energy;
+		energyPoints=0;
 		spriteMoves=allocateMoves(character);
 		currentMove=0;
 		Arrays.fill(isMoveActive, false);
 		isMoveActive[0]=true;
 
+	}
+	
+	public void channelingEnergy(){
+		if(energyPoints<500){
+			energyPoints+=1;
+			System.out.println("Current energy: "+energyPoints);
+
+		}
+		else System.out.println("Energy maxed at: "+energyPoints);
+	}
+	public void beingDamaged(int movedmg){
+		damageTaken+=movedmg;
+		maxHealthPoints-=movedmg;
+		System.out.println("CURRENT HP OF "+characterName+": "+maxHealthPoints + " ALL DAMAGE TAKEN: "+damageTaken);
+		if (maxHealthPoints<=0){
+			isDead=true;
+			maxHealthPoints=0;
+			System.out.println(characterName+" is dead. :(");
+		}
 	}
 	
 	
@@ -163,6 +191,56 @@ public class Animation{
 			animationID = anim;
 	}
 	
+	
+	
+	public int getMaxHealthPoints() {
+		return maxHealthPoints;
+	}
+
+
+
+	public void setMaxHealthPoints(int maxHealthPoints) {
+		this.maxHealthPoints = maxHealthPoints;
+	}
+
+
+
+	public int getMaxEnergyPoints() {
+		return maxEnergyPoints;
+	}
+
+
+
+	public void setMaxEnergyPoints(int maxEnergyPoints) {
+		this.maxEnergyPoints = maxEnergyPoints;
+	}
+
+
+
+	public float getVelY() {
+		return velY;
+	}
+
+
+
+	public void setVelY(float velY) {
+		this.velY = velY;
+	}
+
+
+
+	public float getVelX() {
+		return velX;
+	}
+
+
+
+	public void setVelX(float velX) {
+		this.velX = velX;
+	}
+
+
+
 	public int getFrame(){
 		return animFrame; 
 	}
@@ -208,7 +286,7 @@ public class Animation{
 	
 	public void move(float movX, float movY){
 		posX += movX;
-		posY += movY;
+		posY += movY+velY;
 	}
 	
 	public boolean isCollisionDetected(int player1X, int player2X, int player1Y, int player2Y,int player){
@@ -232,13 +310,13 @@ public class Animation{
 	
 	
 	public int getHealthPoints() {
-		return healthPoints;
+		return damageTaken;
 	}
 
 
 
-	public void setHealthPoints(int healthPoints) {
-		this.healthPoints = healthPoints;
+	public void setHealthPoints(int damageTaken) {
+		this.damageTaken = damageTaken;
 	}
 
 
@@ -429,6 +507,30 @@ public class Animation{
 			}
 		}
 		return zbir;
+	}
+
+
+
+	public boolean isDead() {
+		return isDead;
+	}
+
+
+
+	public void setDead(boolean isDead) {
+		this.isDead = isDead;
+	}
+
+
+
+	public int getDeathCounter() {
+		return deathCounter;
+	}
+
+
+
+	public void setDeathCounter(int deathCounter) {
+		this.deathCounter = deathCounter;
 	}
 	
 }
