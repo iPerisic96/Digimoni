@@ -1,16 +1,21 @@
 package main;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
 
 import com.sun.media.jfxmedia.events.PlayerEvent;
 
+import rafgfxlib.GameFrame;
 import rafgfxlib.ImageViewer;
 import rafgfxlib.Util;
 
@@ -36,6 +41,10 @@ public class AnimatedSprite{
 	private BufferedImage mountain3;
 	private BufferedImage mountain4;
 	
+	private BufferedImage zawarudo = null;
+	private BufferedImage[] cogwheels = new BufferedImage[5];
+	private int zawarudocount=0;
+	
 	private Mountains mountain0;
 	private Mountains mountain01;
 	private Mountains mountain02;
@@ -45,7 +54,12 @@ public class AnimatedSprite{
 	private int countW = 0;
 	private int counter = 0;
 	private WritableRaster raster;
-	
+	private long realtime = System.currentTimeMillis();
+	private int pcountX = 0;
+	private int pcountY = 0;
+	private int anglecount=0;
+	private int anglebrojac=0;
+
 	private static final int IDLE = 0;
 	private static final int WALK = 1;
 	private static final int RUN = 2;
@@ -182,6 +196,15 @@ public class AnimatedSprite{
 		player2.setOrientation("RIGHT");
 		
 		//startThread();
+		
+		
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//	ZA WARUDO
+		
+		zawarudo = Util.loadImage("intropause/zawarudo.png"); 
+		for(int i=0;i<5;i++){
+			cogwheels[i]=Util.loadImage("intropause/"+i+".png");
+		}
 	}
 	
 	public int lerp (int a, int b, double x){
@@ -205,11 +228,10 @@ public class AnimatedSprite{
 	}
 	 
 	public void render(Graphics2D g, int sw, int sh) throws NumberFormatException, IOException{
-		
 		//g.setBackground(backgroundColor);
 		g.clearRect(0, 0, sw, sh);
 		g.drawImage(background, 0, 0, null);
-		
+
 		//clouds
 		countX += 1;
 		if (countX > 2250){
@@ -330,19 +352,48 @@ public class AnimatedSprite{
 				player2.draw1(g);
 			}
 		}
+		
+		
 		if(isGamePaused==true){
-			
+			summonPausePics(g);
 		}
 		
 	}
-	
+	public void summonPausePics(Graphics2D g){
+		
+		pcountX+=3;
+		pcountY+=3;
+		anglecount+=5;
+		if(anglecount==360){
+			anglecount=0;
+		}
+		long razlika = System.currentTimeMillis()-realtime;
+		System.out.println("RAZLIKA: "+razlika);
+		float alpha = 0.9f;
+		AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,alpha);
+		g.setComposite(alphaComposite);
+		g.setColor(Color.darkGray);
+		g.fillRect(0, 0, 1000, 800);
+		//Random rotation, great for cogwheels
+		
+		if(anglebrojac==0&&pcountX<=zawarudo.getWidth()*2&&pcountY<=zawarudo.getHeight()*2){
+			g.rotate(Math.toRadians(anglecount), background.getWidth()/2, background.getHeight()/2);
+			g.drawImage(zawarudo,background.getWidth()/2+pcountX, background.getHeight()/2+pcountY,pcountX/2,pcountY/2,null );
+		}else anglebrojac++;
+		
+		if(pcountX>0)pcountX-=3;if(pcountY>0)pcountY-=3;
+		g.drawImage(zawarudo, pcountX, pcountY, zawarudo.getWidth(), zawarudo.getHeight(), null);
+		pcountX-=3;
+		pcountY-=3;
+		
+	}
 	
 	
 	public void update(boolean h, boolean c, boolean v, boolean f, boolean g, boolean e, boolean l, boolean la2, boolean ha2, boolean sa2, boolean ua2, boolean e2, boolean d, boolean a, boolean s, boolean w, boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
 		
 		
 		//Player1
-		if(!player1.isDead()&&!player2.isDead()){
+		if(!player1.isDead()&&!player2.isDead()&&!isGamePaused){
 		if(player1.isEvolving()==false&&player1.countOfActiveMoves()==1){
 			player1.move(0,0);
 			player1.update(IDLE);
@@ -449,7 +500,7 @@ public class AnimatedSprite{
 		
 		//Player 2
 		
-		if(!player1.isDead()&&!player2.isDead()){
+		if(!player1.isDead()&&!player2.isDead()&&!isGamePaused){
 		if(player2.isEvolving()==false&&player2.countOfActiveMoves()==1){
 			player2.move(0,0);
 			player2.update(IDLE);
@@ -720,7 +771,7 @@ public class AnimatedSprite{
 	{ 
 		
 		//Player1
-		if(!player1.isDead()&&!player2.isDead()||!isGamePaused){
+		if(!player1.isDead()&&!player2.isDead()&&!isGamePaused){
 		if(keyCode == KeyEvent.VK_W){
 			if(keyCode!=lastKey){
 				player1.setFrame(0, JUMP);
@@ -948,9 +999,15 @@ public class AnimatedSprite{
 		if(keyCode==KeyEvent.VK_P){
 			if(isGamePaused==false){
 				isGamePaused=true;
+				realtime=System.currentTimeMillis();
+				zawarudocount=1;
+				pcountX=0;
+				pcountY=0;
+				anglebrojac=0;
 			}
 			else{
 				isGamePaused=false;
+				zawarudocount=0;
 			}
 		}
 	}
@@ -958,7 +1015,8 @@ public class AnimatedSprite{
 	//@Override
 	public void handleKeyUp(int keyCode) { 
 		//Player1
-		if(keyCode==KeyEvent.VK_D||keyCode==KeyEvent.VK_S||keyCode==KeyEvent.VK_A||keyCode==KeyEvent.VK_H){
+		if(!isGamePaused){
+			if(keyCode==KeyEvent.VK_D||keyCode==KeyEvent.VK_S||keyCode==KeyEvent.VK_A||keyCode==KeyEvent.VK_H){
 			player1.setIsMoveActive(false, WALK);
 			player1.setIsMoveActive(false, RUN);
 			player1.setIsMoveActive(false, GUARD);
@@ -984,7 +1042,7 @@ public class AnimatedSprite{
 			player2.play();
 			player2.setFrame(0,IDLE);
 		}	
-		
+	}
 		
 		
 		

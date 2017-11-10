@@ -250,7 +250,6 @@ public class OpeningScreen extends GameFrame
 			return;
 		}
 		
-		
 		if(binary){
 			
 	
