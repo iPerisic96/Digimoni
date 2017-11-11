@@ -4,6 +4,9 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -13,9 +16,12 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 
+import javax.xml.stream.events.StartDocument;
+
 import com.sun.media.jfxmedia.events.PlayerEvent;
 
 import rafgfxlib.GameFrame;
+import rafgfxlib.GameFrame.GFMouseButton;
 import rafgfxlib.ImageViewer;
 import rafgfxlib.Util;
 
@@ -82,6 +88,10 @@ public class AnimatedSprite{
 	private long starttime1=-1;
 	private long starttime2=-1;
 	
+	private Lyne lyne;
+	private Point startingPoint;
+	private boolean isLightning=false;
+			
 	private int ground = 782;
 	private float jump_speed1=3;
 	private float jump_speed2=3;
@@ -353,10 +363,20 @@ public class AnimatedSprite{
 			}
 		}
 		
+		if(isLightning){
+			Random random = new Random();
+			int gpx=random.nextInt(750);
+			
+			Point groundPoint = new Point(gpx+150,ground);
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+startingPoint.getX()+startingPoint.getY());
+			lyne = new Lyne(startingPoint, groundPoint);
+			lyne.generateLightning(g, 5);
+		}
 		
 		if(isGamePaused==true){
 			summonPausePics(g);
 		}
+		
 		
 	}
 	public void summonPausePics(Graphics2D g){
@@ -756,21 +776,29 @@ public class AnimatedSprite{
 		*/
 	}
 
-	/*@Override
-	public void handleMouseDown(int x, int y, GFMouseButton button) { }
+	public void handleMouseDown(int x, int y, GFMouseButton button){
+		
+	}
 
-	@Override
-	public void handleMouseUp(int x, int y, GFMouseButton button) { }
+	
+	public void handleMouseUp(int x, int y, GFMouseButton button){
+		
+	}
 
-	@Override
+	
 	public void handleMouseMove(int x, int y) { }
 
-*/
+
 	//@Override
 	public void handleKeyDown(int keyCode) 
 	{ 
-		
-		//Player1
+		if(keyCode==KeyEvent.VK_SPACE){
+			PointerInfo aInfo = MouseInfo.getPointerInfo();
+			startingPoint = aInfo.getLocation();
+			System.out.println("MIS X: "+startingPoint.getX()+" MIS Y: "+startingPoint.getY()); 
+			isLightning=true;
+		}
+		//Player1		
 		if(!player1.isDead()&&!player2.isDead()&&!isGamePaused){
 		if(keyCode == KeyEvent.VK_W){
 			if(keyCode!=lastKey){
@@ -1015,6 +1043,9 @@ public class AnimatedSprite{
 	//@Override
 	public void handleKeyUp(int keyCode) { 
 		//Player1
+		if(keyCode==KeyEvent.VK_SPACE){
+			isLightning=false;
+		}
 		if(!isGamePaused){
 			if(keyCode==KeyEvent.VK_D||keyCode==KeyEvent.VK_S||keyCode==KeyEvent.VK_A||keyCode==KeyEvent.VK_H){
 			player1.setIsMoveActive(false, WALK);
