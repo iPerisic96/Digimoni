@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -41,9 +42,9 @@ public class AnimatedSprite{
 	private Mountains mountain02;
 	private Mountains mountain03;
 	
-	private int countX = 0;
-	private int countW = 0;
 	private int counter = 0;
+	private float alpha = 1;
+	private int countFlag = 0;
 	private WritableRaster raster;
 	
 	private static final int IDLE = 0;
@@ -80,11 +81,17 @@ public class AnimatedSprite{
 	
     private static int lastKey = -1;
 
+    private Meteor meteor;
+    private StarField sf;
+    
+    private boolean fade;
+    
+    private int rgb [];
 	
 	public AnimatedSprite(String firstPlayerSpriteSheet, String secondPlayerSpriteSheet) throws NumberFormatException, IOException{
 		
 		//super("PrimerPozadine", 640, 480);
-		
+		sf = new StarField(0, 0, 1000, 800, 1000);
 		//setUpdateRate(60);
 		for (int i = 1; i < 8; i++){
 			cloud = Util.loadImage("clouds/Cloud" + i + ".png");
@@ -96,9 +103,9 @@ public class AnimatedSprite{
 		//mountain = Util.loadImage("mountain.png");
 		
 	// background ----------------------------------------
-		raster = Util.createRaster(1000, 800, false);
+		raster = Util.createRaster(1000, 800, true);
 		
-		int rgb [] = new int [3];
+		this.rgb = new int [4];
 		
 		int bottom [] = new int [3];
 		bottom[0] = 255;
@@ -117,6 +124,7 @@ public class AnimatedSprite{
 				rgb[0] = lerp(top[0], bottom[0], fy);
 				rgb[1] = lerp(top[1], bottom[1], fy);
 				rgb[2] = lerp(top[2], bottom[2], fy);
+				setAlpha(255);
 				
 				raster.setPixel(x, y, rgb);
 				
@@ -202,27 +210,66 @@ public class AnimatedSprite{
 			lastKey=currentKey;
 		}
 	}
-	 
-	public void render(Graphics2D g, int sw, int sh) throws NumberFormatException, IOException{
+	 NightSky ns = new NightSky();
+	 BufferedImage night = ns.create();
+	
+	 public void render(Graphics2D g, int sw, int sh) throws NumberFormatException, IOException{
 		
 		//g.setBackground(backgroundColor);
-		g.clearRect(0, 0, sw, sh);
-		g.drawImage(background, 0, 0, null);
+		
+		if (counter == 2251){
+			countFlag = 1;
+		} else if (counter == 0){
+			countFlag = 0;
+		}
+		
+		
+		if (countFlag == 1 ){
+			
+			fade = false;
+			/*mountain = mountain0.brightness(mountain, -1);
+			mountain2 = mountain01.brightness(mountain2, -1);
+			mountain3 = mountain02.brightness(mountain3, -1);
+			mountain4 = mountain03.brightness(mountain, -1);*/
+			g.drawImage(night, 0, 0, null);
+			sf.draw(g);
+		
+			if (counter < 501){
+				fade = true;
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+				g.drawImage(background, 0, 0, null);;
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+				
+			}
+			
+			counter -=1;
+		
+		}else  {
+			fade = false;
+			System.out.println(counter);
+			g.clearRect(0, 0, sw, sh);
+			//g.drawImage(night, 0, 0, null);
+			//sf.draw(g);
+			g.drawImage(background, 0, 0, null);
+			
+			if (counter > 1749){
+				fade = true;
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+				g.drawImage(night, 0, 0, null);
+				sf.draw(g);
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+				
+		}
 		
 		//clouds
-		countX += 1;
-		if (countX > 2250){
-			countX = 0;
+		g.drawImage(clouds.get(0), sw - counter , 50, null);
+		g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - counter, clouds.get(1).getWidth()/2, null);
+		g.drawImage(clouds.get(2), sw + clouds.get(2).getWidth() + clouds.get(1).getWidth() - counter, 50, null);
+		g.drawImage(clouds.get(3), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() -counter, 50, null);
+		g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -counter, 50, null);
+		g.drawImage(clouds.get(1), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() + clouds.get(4).getWidth()  -counter, 50, null);
+		counter += 1;
 		}
-		System.out.println(countX);
-		
-		g.drawImage(clouds.get(0), sw - countX , 50, null);
-		g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - countX-10, clouds.get(1).getWidth()/2, null);
-		g.drawImage(clouds.get(2), sw + clouds.get(2).getWidth() + clouds.get(1).getWidth() - countX, 50, null);
-		g.drawImage(clouds.get(3), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() -countX, 50, null);
-		g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -countX, 50, null);
-		g.drawImage(clouds.get(1), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() + clouds.get(4).getWidth()  -countX, 50, null);
-		
 		//healthBar1
 		g.setColor(Color.GRAY);
 		g.fillRoundRect(8, 8, 300, 30, 30, 55);
@@ -286,7 +333,6 @@ public class AnimatedSprite{
 			g.drawImage(village, y*(village.getWidth()), sh-village.getHeight()-platform.getHeight(), null);
 		}
 		
-
 		if(playerright-playerleft>0){
 			if(player1.getOrientation()=="RIGHT"||player2.getOrientation()==""){
 				player1.switchOrientation();
@@ -336,8 +382,22 @@ public class AnimatedSprite{
 	
 	public void update(boolean h, boolean c, boolean v, boolean f, boolean g, boolean e, boolean l, boolean la2, boolean ha2, boolean sa2, boolean ua2, boolean e2, boolean d, boolean a, boolean s, boolean w, boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
 		
-		//Player1
+		if (fade){
+			if (countFlag == 0){
+			alpha = Math.abs(1750-counter)/500f;
+			System.out.println("Alpha : " + counter);
+			}
+			else {
+				alpha = (500-counter)/500f;
+			}
+		}
+		else {
+			alpha = 0;
+		}
 		
+		
+		//Player1
+
 		if(d){
 			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
 				player1.update(RUN);
@@ -524,6 +584,8 @@ public class AnimatedSprite{
 		
 		playerleft=player1.getPositionX();
 		playerright=player2.getPositionX();
+		
+		sf.update();
 	}
 
 	/*@Override
@@ -721,6 +783,7 @@ public class AnimatedSprite{
 		}
 		
 		
+	
 	}
 	
 	//@Override
@@ -783,4 +846,14 @@ public class AnimatedSprite{
 			player2.setFrame(0,IDLE);
 		}
 	}
+
+	public int[] getRgb() {
+		return rgb;
+	}
+
+	public void setAlpha(int num) {
+		this.rgb[3] = num;
+	}
+	
+	
 }
