@@ -10,8 +10,8 @@ public class TwinklingStar {
 	private final int xLoc, yLoc;
 	private final BufferedImage[] star;
 	
-	public TwinklingStar(int x, int y, BufferedImage darkerStar, BufferedImage brighterStar)
-	{
+	public TwinklingStar(int x, int y, BufferedImage darkerStar, BufferedImage brighterStar){
+		
 		xLoc = x;
 		yLoc = y;
 		star = new BufferedImage[2];
@@ -20,18 +20,16 @@ public class TwinklingStar {
 		lastChange = System.nanoTime();
 	}
 	
-	public void update()
-	{
-		if (System.nanoTime() - lastChange > 200000000)
-		{
+	public void update(){
+		
+		if (System.nanoTime() - lastChange > 200000000){
 			state++;
 			state &= 0x1;
 			lastChange = System.nanoTime();
 		}
 	}
 	
-	public void draw(Graphics2D g2)
-	{
+	public void draw(Graphics2D g2){
 		g2.drawImage(star[state], xLoc, yLoc, null);
 	}
 }

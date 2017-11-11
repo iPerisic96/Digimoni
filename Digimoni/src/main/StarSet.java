@@ -7,27 +7,23 @@ import java.awt.image.WritableRaster;
 public class StarSet {
 private final BufferedImage[][] stars;
 	
-	public BufferedImage getStar(int size, int brightness)
-	{
+	public BufferedImage getStar(int size, int brightness){
 		return stars[size][brightness];
 	}
 	
-	public StarSet()
-	{
+	public StarSet(){
 		this(Color.WHITE);
 	}
 	
 	
-	public StarSet(Color color)
-	{
+	public StarSet(Color color){
 		stars = new BufferedImage[5][6];
 		
 		int[] pixel = new int[4];
 
-		for (int i = 0; i < 6; i++)
-		{
-			BufferedImage newImage = 
-					new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);	
+		for (int i = 0; i < 6; i++){
+			
+			BufferedImage newImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);	
 			WritableRaster raster = newImage.getRaster();
 			
 			pixel[0] = Math.max(0, color.getRed() - i * 24);
@@ -40,10 +36,9 @@ private final BufferedImage[][] stars;
 			
 		}
 		
-		for (int i = 0; i < 6; i++)
-		{
-			BufferedImage newImage = 
-					new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);	
+		for (int i = 0; i < 6; i++){
+			
+			BufferedImage newImage = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);	
 			WritableRaster raster = newImage.getRaster();
 			
 			pixel[0] = Math.max(0, color.getRed() - i * 24);
@@ -69,10 +64,9 @@ private final BufferedImage[][] stars;
 			
 		}
 		
-		for (int i = 0; i < 6; i++)
-		{
-			BufferedImage newImage = 
-					new BufferedImage(5, 5, BufferedImage.TYPE_INT_ARGB);	
+		for (int i = 0; i < 6; i++){
+			
+			BufferedImage newImage = new BufferedImage(5, 5, BufferedImage.TYPE_INT_ARGB);	
 			WritableRaster raster = newImage.getRaster();
 			
 			pixel[0] = Math.max(0, color.getRed() - i * 24);
@@ -122,10 +116,9 @@ private final BufferedImage[][] stars;
 		
 
 			
-		for (int i = 0; i < 6; i++)
-		{
-			BufferedImage newImage = 
-					new BufferedImage(7, 7, BufferedImage.TYPE_INT_ARGB);	
+		for (int i = 0; i < 6; i++){
+			
+			BufferedImage newImage = new BufferedImage(7, 7, BufferedImage.TYPE_INT_ARGB);	
 			WritableRaster raster = newImage.getRaster();
 			
 			pixel[0] = Math.max(0, color.getRed() - i * 24);
@@ -202,10 +195,9 @@ private final BufferedImage[][] stars;
 			
 		}			
 
-		for (int i = 0; i < 6; i++)
-		{
-			BufferedImage newImage = 
-					new BufferedImage(9, 9, BufferedImage.TYPE_INT_ARGB);	
+		for (int i = 0; i < 6; i++){
+			
+			BufferedImage newImage = new BufferedImage(9, 9, BufferedImage.TYPE_INT_ARGB);	
 			WritableRaster raster = newImage.getRaster();
 			
 			pixel[0] = Math.max(0, color.getRed() - i * 24);

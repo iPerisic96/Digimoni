@@ -18,8 +18,8 @@ public class Meteor {
 	  private long endTime;
 	  private Random random;
 	  
-	  public Meteor(BufferedImage star, int left, int top, int width, int height)
-	  {
+	  public Meteor(BufferedImage star, int left, int top, int width, int height){
+		  
 	    this.random = new Random();
 	    this.left = left;
 	    this.top = top;
@@ -29,8 +29,8 @@ public class Meteor {
 	    this.star = star;
 	  }
 	  
-	  private void initialize()
-	  {
+	  private void initialize(){
+		  
 	    this.xLoc = (this.left + this.random.nextInt(this.width - 5));
 	    this.yLoc = (this.top + this.random.nextInt(this.height - 5));
 	    int degrees = this.random.nextInt(180);
@@ -43,11 +43,11 @@ public class Meteor {
 	    this.endTime = (this.startTime + (this.random.nextInt(8) + 4) * 100);
 	  }
 	  
-	  public void update()
-	  {
+	  public void update(){
+		  
 	    long now = System.currentTimeMillis();
-	    if (now > this.startTime)
-	    {
+	    if (now > this.startTime){
+	    	
 	      this.xLoc += this.xVel;
 	      this.yLoc += this.yVel;
 	      if (now > this.endTime) {
@@ -60,8 +60,8 @@ public class Meteor {
 	    }
 	  }
 	  
-	  public void draw(Graphics2D g2)
-	  {
+	  public void draw(Graphics2D g2){
+		  
 	    if (System.currentTimeMillis() > this.startTime) {
 	      g2.drawImage(this.star, (int)this.xLoc, (int)this.yLoc, null);
 	    }

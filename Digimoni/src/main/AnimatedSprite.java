@@ -2,7 +2,6 @@ package main;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -11,18 +10,10 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Timer;
 
-import javax.xml.stream.events.StartDocument;
-
-import com.sun.media.jfxmedia.events.PlayerEvent;
-
-import rafgfxlib.GameFrame;
 import rafgfxlib.GameFrame.GFMouseButton;
-import rafgfxlib.ImageViewer;
 import rafgfxlib.Util;
 
 
@@ -104,8 +95,6 @@ public class AnimatedSprite{
 	
     private static int lastKey = -1;
 
-
-    private Meteor meteor;
     private StarField sf;
     
     private boolean fade;
@@ -116,9 +105,8 @@ public class AnimatedSprite{
 	
 	public AnimatedSprite(String firstPlayerSpriteSheet, String secondPlayerSpriteSheet) throws NumberFormatException, IOException{
 		
-		//super("PrimerPozadine", 640, 480);
 		sf = new StarField(0, 0, 1000, 800, 1000);
-		//setUpdateRate(60);
+		
 		for (int i = 1; i < 8; i++){
 			cloud = Util.loadImage("clouds/Cloud" + i + ".png");
 			clouds.add(cloud);
@@ -126,7 +114,6 @@ public class AnimatedSprite{
 		
 		village = Util.loadImage("village.png");
 		platform = Util.loadImage("tile.png");
-		//mountain = Util.loadImage("mountain.png");
 		
 	// background ----------------------------------------
 		raster = Util.createRaster(1000, 800, true);
@@ -214,8 +201,6 @@ public class AnimatedSprite{
 		player1.setOrientation("LEFT");
 		player2.setOrientation("RIGHT");
 		
-		//startThread();
-		
 		
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//	ZA WARUDO
@@ -254,24 +239,16 @@ public class AnimatedSprite{
 
 	 
 	public void render(Graphics2D g, int sw, int sh) throws NumberFormatException, IOException{
-		//g.setBackground(backgroundColor);
 		
 		if (counter == 2251){
 			countFlag = 1;
 		} else if (counter == 0){
 			countFlag = 0;
 		}
-		
-		//clouds
-		
-		
+
 		if (countFlag == 1 ){
 			
 			fade = false;
-			/*mountain = mountain0.brightness(mountain, -1);
-			mountain2 = mountain01.brightness(mountain2, -1);
-			mountain3 = mountain02.brightness(mountain3, -1);
-			mountain4 = mountain03.brightness(mountain, -1);*/
 			g.drawImage(night, 0, 0, null);
 			sf.draw(g);
 		
@@ -300,16 +277,16 @@ public class AnimatedSprite{
 				sf.draw(g);
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
 				
-		}
+			}
 		
-		//clouds
-		g.drawImage(clouds.get(0), sw - counter , 50, null);
-		g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - counter, clouds.get(1).getWidth()/2, null);
-		g.drawImage(clouds.get(2), sw + clouds.get(2).getWidth() + clouds.get(1).getWidth() - counter, 50, null);
-		g.drawImage(clouds.get(3), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() -counter, 50, null);
-		g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -counter, 50, null);
-		g.drawImage(clouds.get(1), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() + clouds.get(4).getWidth()  -counter, 50, null);
-		counter += 1;
+			//clouds
+			g.drawImage(clouds.get(0), sw - counter , 50, null);
+			g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - counter, clouds.get(1).getWidth()/2, null);
+			g.drawImage(clouds.get(2), sw + clouds.get(2).getWidth() + clouds.get(1).getWidth() - counter, 50, null);
+			g.drawImage(clouds.get(3), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() -counter, 50, null);
+			g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -counter, 50, null);
+			g.drawImage(clouds.get(1), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() + clouds.get(4).getWidth()  -counter, 50, null);
+			counter += 1;
 		}
 		//healthBar1
 		g.setColor(Color.GRAY);

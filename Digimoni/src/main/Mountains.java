@@ -3,7 +3,6 @@ package main;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
-import rafgfxlib.ImageViewer;
 import rafgfxlib.Util;
 
 public class Mountains{
@@ -20,9 +19,9 @@ public class Mountains{
 	private int left[];
 	private int right[];
 	private double gradientHeight;
-	
+
 	public Mountains(int width, int height, double scal, int pom, int amplitudeHeight, int position, int left[], int right[], double gradientHeight) {
-		
+
 		this.raster = Util.createRaster(width, height, true);
 		this.width = width;
 		this.height = height;
@@ -95,8 +94,6 @@ public class Mountains{
 			{
 				source.getPixel(x, y, rgba);
 				
-				// Koristimo funkciju koju smo napravili da pojednostavimo
-				// ovu proceduru i skratimo kod.
 				rgba[0] = saturate(rgba[0] - brightness);
 				rgba[1] = saturate(rgba[1] - brightness);
 				rgba[2] = saturate(rgba[2] - brightness);
@@ -104,14 +101,9 @@ public class Mountains{
 			}
 		}
 	
-		// Konverzija rastera u BufferedImage i prikaz u prozoru
 		return Util.rasterToImage(target);
 	}
 
-	
-	// Jedna cesta operacija u radu sa grafikom je ogranicavanje vrijednosti
-		// na opseg, sto se naziva "clamp", pa cemo napraviti jednostavnu
-		// implementaciju te funkcije.
 		public static int clamp(int value, int min, int max)
 		{
 			if(value < min) return min;
@@ -119,9 +111,6 @@ public class Mountains{
 			return value;
 		}
 		
-		// Zavisno od konteksta, opseg od 0 do 255 ili od 0 do 1 su najcesci,
-		// stoga je korisno imati i funkciju samo za taj opseg, da dodatno
-		// skrati kod koji pisemo kasnije.
 		public static int saturate(int value)
 		{
 			return clamp(value, 0, 255);

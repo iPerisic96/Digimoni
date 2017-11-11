@@ -3,7 +3,6 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class StarField {
@@ -12,21 +11,15 @@ public class StarField {
 	private Random random;
 	private int left, top, width, height;
 	private Meteor meteor, m2, m3;
-	private BufferedImage gc;
 	private int numberOfStars;
 	
 	
-	public StarField(int left, int top, int width, int height,
-			int numberOfStars)
-	{
-		this(left, top, width, height, numberOfStars, 
-				(long)System.nanoTime());
+	public StarField(int left, int top, int width, int height, int numberOfStars){
+		this(left, top, width, height, numberOfStars, (long)System.nanoTime());
 	}
 	
-	public StarField(int left, int top, int width, int height,
-			int numberOfStars, long seed)
-	{
-		random = new Random(seed);  // can set long seed, optionally
+	public StarField(int left, int top, int width, int height, int numberOfStars, long seed){
+		random = new Random(seed); 
 		
 		this.numberOfStars = numberOfStars;
 		starField = new TwinklingStar[numberOfStars];
@@ -46,10 +39,9 @@ public class StarField {
 		
 		
 		int incr = 0;
-		while (incr < numberOfStars)
-		{
+		while (incr < numberOfStars){
 			// choose R, W, or B
-			int color = random.nextInt(5);
+			int color = random.nextInt(3);
 			
 			switch(color)
 			{
@@ -57,11 +49,9 @@ public class StarField {
 				currStars = starsRed;
 				break;
 			case 1:
-			case 2:
 				currStars = starsWhite;
 				break;
-			case 3:
-			case 4:
+			case 2:
 				currStars = starsBlue;
 			}
 			
@@ -75,18 +65,13 @@ public class StarField {
 			int xloc = random.nextInt(width - 5);
 			int yloc = random.nextInt(height - 12);
 			
-			starField[incr] = new TwinklingStar(
-					xloc + left, yloc + top,
-					currStars.getStar(size, brightness),
-					currStars.getStar(size, brightness + 1));	
+			starField[incr] = new TwinklingStar(xloc + left, yloc + top, currStars.getStar(size, brightness), currStars.getStar(size, brightness + 1));	
 			incr++;
 		}
 	}
 	
-	public void update()
-	{
-		for (int i = 0, n = numberOfStars / 16; i < n; i++)
-		{
+	public void update(){
+		for (int i = 0, n = numberOfStars / 16; i < n; i++){
 			starField[random.nextInt(starField.length)].update();
 		}
 		meteor.update();
@@ -94,18 +79,15 @@ public class StarField {
 		m3.update();
 	}
 	
-	public void draw(Graphics2D g2)
-	{
+	public void draw(Graphics2D g2){
 		Rectangle2D rect = new Rectangle2D.Double(left, top, width, height);
 		
 		// slight atmospheric blueness
 		g2.setPaint(new Color(0, 0, 255, 24));
 		g2.fill(rect);
 		
-		// two galactic clouds
 		
-		for (TwinklingStar ts: starField)
-		{
+		for (TwinklingStar ts: starField){
 			ts.draw(g2);
 		}
 		meteor.draw(g2);
