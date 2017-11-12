@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import rafgfxlib.GameFrame.GFMouseButton;
+import rafgfxlib.ImageViewer;
 import rafgfxlib.Util;
 
 
@@ -205,11 +206,11 @@ public class AnimatedSprite{
 		spriteSheet2.setOffsets(50, 50);
 		
 		player1 = new Animation(spriteSheet1, "Gatomon", 30000, 1000, 200 , ground);
-		health1 = (int)(player1.getMaxHealthPoints()/100);
+		health1 = player1.getHealthPoints()/100;
 		player1.play();
 		
 		player2 = new Animation(spriteSheet2, "Gabumon", 30000, 1000, 800, ground);
-		health2 = (int)(player2.getMaxHealthPoints()/100);
+		health2 = player2.getMaxHealthPoints()/100;
 		player2.play();
 		
 		playerleft=player1.getPositionX();
@@ -305,46 +306,47 @@ public class AnimatedSprite{
 			counter += 1;
 		}
 		//healthBar1
-		g.setColor(Color.GRAY);
-		g.fillRoundRect(8, 8, 300, 30, 30, 55);
 									
 		g.setColor(Color.GREEN);
-		g.fillRoundRect(8, 8, health1, 30, 30, 55);
+		g.fillRect(8, 8, 300, 30);
+		
+		g.setColor(Color.GRAY);
+		g.fillRect(8, 8, health1, 30);
 		
 		g.setColor(Color.WHITE);
-		g.drawRoundRect(8, 8, 300, 30, 30, 55);
+		g.drawRect(8, 8, 300, 30);
 						
 		//healthBar2
 		g.setColor(Color.GRAY);
-		g.fillRoundRect(692, 8, 300, 30, 30, 55); //1000-300-8 = 692
+		g.fillRect(692, 8, 300, 30); //1000-300-8 = 692
 		
 		g.setColor(Color.GREEN);
-		g.fillRoundRect(692, 8, health2, 30, 30, 55);
+		g.fillRect(692, 8, health2, 30);
 		
 		g.setColor(Color.WHITE);
-		g.drawRoundRect(692, 8, 300, 30, 30, 55);
+		g.drawRect(692, 8, 300, 30);
 		
 		//energyBar1
 		
 		g.setColor(Color.WHITE);
-		g.fillRect(20, 48, energy1, 20); // y = 8 + 30 + 10
+		g.fillRect(8, 48, energy1, 20); // y = 8 + 30 + 10
 		
 		g.setColor(Color.RED);
-		g.drawLine(70, 68, 70, 48);  //20+50
+		g.drawLine(58, 68, 58, 48);  //20+50
 		
 		g.setColor(Color.GRAY);
-		g.drawRect(20, 48, 100, 20); // y = 8 + 30 + 10
+		g.drawRect(8, 48, 100, 20); // y = 8 + 30 + 10
 		
 		//energyBar2
 		
 		g.setColor(Color.WHITE);
-		g.fillRect(880, 48, energy2, 20); // y = 8 + 30 + 10, x = 1000-20-100
+		g.fillRect(892, 48, energy2, 20); // y = 8 + 30 + 10, x = 1000-8-100
 		
 		g.setColor(Color.RED);
-		g.drawLine(930, 68, 930, 48);  //880+50
+		g.drawLine(942, 68, 942, 48);  //892+50
 
 		g.setColor(Color.GRAY);
-		g.drawRect(880, 48, 100, 20); // y = 8 + 30 + 10
+		g.drawRect(892, 48, 100, 20); // y = 8 + 30 + 10
 				
 		
 		//mountains
@@ -689,7 +691,7 @@ public class AnimatedSprite{
 		if(player2.getIsMoveActive(LIGHTATTACK)&&player2.countOfActiveMoves()!=1){
 			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
 				player1.beingDamaged(player2.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
-				health1 = player1.getMaxHealthPoints()/100;
+				health1 = player1.getHealthPoints()/100;
 			}
 			player2.move(0, 0);
 			player2.update(LIGHTATTACK);
