@@ -51,7 +51,7 @@ public class AnimatedSprite{
 	
 	private int counter = 0;
 	private float alpha = 1;
-	private int countFlag = 0;
+	private int nightFlag = 0;
 	private WritableRaster raster;
 	private long realtime = System.currentTimeMillis();
 	private int pcountX = 0;
@@ -117,6 +117,7 @@ public class AnimatedSprite{
     
     private int health1;
     private int health2;
+    
     
 	public AnimatedSprite(String firstPlayerSpriteSheet, String secondPlayerSpriteSheet) throws NumberFormatException, IOException{
 		
@@ -258,12 +259,12 @@ public class AnimatedSprite{
 	public void render(Graphics2D g, int sw, int sh) throws NumberFormatException, IOException{
 		
 		if (counter == 2251){
-			countFlag = 1;
+			nightFlag = 1;
 		} else if (counter == 0){
-			countFlag = 0;
+			nightFlag = 0;
 		}
 
-		if (countFlag == 1 ){
+		if (nightFlag == 1 ){
 			
 			fade = false;
 			g.drawImage(night, 0, 0, null);
@@ -530,7 +531,7 @@ public class AnimatedSprite{
 		
 
 		if (fade){
-			if (countFlag == 0){
+			if (nightFlag == 0){
 			alpha = Math.abs(1750-counter)/500f;
 			System.out.println("Alpha : " + counter);
 			}
