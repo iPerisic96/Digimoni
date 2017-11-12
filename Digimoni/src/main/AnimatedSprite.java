@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -82,8 +83,13 @@ public class AnimatedSprite{
 	
 	private Lyne lyne;
 	private Point startingPoint;
+	private Point releasedStartingPoint;
 	private boolean isLightning=false;
-			
+	private boolean isLightningReleased=false;
+	private float newAlpha=1f;
+	private long newStartingTime;
+	private ArrayList<HashPoint> hashbrownies=new ArrayList<HashPoint>();
+	
 	private int ground = 782;
 	private float jump_speed1=3;
 	private float jump_speed2=3;
@@ -411,8 +417,28 @@ public class AnimatedSprite{
 			Point groundPoint = new Point(gpx+150,ground);
 			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+startingPoint.getX()+startingPoint.getY());
 			lyne = new Lyne(startingPoint, groundPoint);
-			lyne.generateLightning(g, 5);
+			lyne.generateLightning(5);
+			lyne.drawLightning(g);
 		}
+		
+		if(isLightningReleased){
+			AlphaComposite alphaComposite1 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,newAlpha);
+			g.setComposite(alphaComposite1);
+			Random random = new Random();
+			int gpx=random.nextInt(750);
+			Point groundPoint = new Point(gpx+150,ground);
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+releasedStartingPoint.getX()+releasedStartingPoint.getY());
+			lyne = new Lyne(releasedStartingPoint, groundPoint);
+			lyne.generateLightning(5);
+			if(hashbrownies.isEmpty()){
+				hashbrownies=lyne.getHashPoints();
+			}
+			lyne.setHashPoints(hashbrownies);
+			lyne.drawLightning(g);
+			AlphaComposite alphaComposite2 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
+			g.setComposite(alphaComposite2);
+		}
+		
 		
 		if(isGamePaused==true){
 			summonPausePics(g);
@@ -445,11 +471,27 @@ public class AnimatedSprite{
 		g.drawImage(zawarudo, pcountX, pcountY, zawarudo.getWidth(), zawarudo.getHeight(), null);
 		pcountX-=3;
 		pcountY-=3;
+		AlphaComposite alphaComposite1 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
+		g.setComposite(alphaComposite1);
 		
 	}
 	
 	
 	public void update(boolean h, boolean c, boolean v, boolean f, boolean g, boolean e, boolean l, boolean la2, boolean ha2, boolean sa2, boolean ua2, boolean e2, boolean d, boolean a, boolean s, boolean w, boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
+		
+		if(isLightningReleased==true){
+			if(System.currentTimeMillis()-newStartingTime>500){
+				System.out.println("CURRENT TIMEXXX: "+(System.currentTimeMillis()-newStartingTime));
+				newAlpha-=0.015f;
+				System.out.println("jebem ti picku materinu neprovidnu zasto ne radis: "+newAlpha);
+			}
+			if(newAlpha<0){
+				isLightningReleased=false;
+				newAlpha=1f;
+				hashbrownies.clear();
+			}
+		}
+		
 		
 
 		if (fade){
@@ -840,7 +882,7 @@ public class AnimatedSprite{
 
 
 	}
-
+	
 
 	public void handleMouseDown(int x, int y, GFMouseButton button){
 		
@@ -848,7 +890,14 @@ public class AnimatedSprite{
 
 	
 	public void handleMouseUp(int x, int y, GFMouseButton button){
-		
+		if(isLightningReleased==false){
+			PointerInfo aInfo2 = MouseInfo.getPointerInfo();
+			releasedStartingPoint = aInfo2.getLocation();
+			releasedStartingPoint = new Point((int)(releasedStartingPoint.getX()-OpeningScreen.nekako.getLocationOnScreen().getX()),(int)(releasedStartingPoint.getY()-OpeningScreen.nekako.getLocationOnScreen().getY()));			
+			isLightningReleased=true;
+			newStartingTime=System.currentTimeMillis();
+		}
+
 	}
 
 	
@@ -861,6 +910,8 @@ public class AnimatedSprite{
 		if(keyCode==KeyEvent.VK_SPACE){
 			PointerInfo aInfo = MouseInfo.getPointerInfo();
 			startingPoint = aInfo.getLocation();
+			
+			startingPoint = new Point((int)(startingPoint.getX()-OpeningScreen.nekako.getLocationOnScreen().getX()),(int)(startingPoint.getY()-OpeningScreen.nekako.getLocationOnScreen().getY()));			
 			System.out.println("MIS X: "+startingPoint.getX()+" MIS Y: "+startingPoint.getY()); 
 			isLightning=true;
 		}
