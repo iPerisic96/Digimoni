@@ -33,7 +33,6 @@ public class Mountains{
 		this.right = right;
 		this.gradientHeight = gradientHeight;
 		
-		
 	}
 	
 	public int lerp (int a, int b, double x){

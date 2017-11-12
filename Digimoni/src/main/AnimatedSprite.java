@@ -102,7 +102,13 @@ public class AnimatedSprite{
     private int rgb [];
 
     private boolean isGamePaused=false;
-	
+    
+    private int energy1;
+    private int energy2;
+    
+    private int health1;
+    private int health2;
+    
 	public AnimatedSprite(String firstPlayerSpriteSheet, String secondPlayerSpriteSheet) throws NumberFormatException, IOException{
 		
 		sf = new StarField(0, 0, 1000, 800, 1000);
@@ -190,10 +196,12 @@ public class AnimatedSprite{
 		spriteSheet2 = new SpriteSheet(secondPlayerSpriteSheet, 10, 30);
 		spriteSheet2.setOffsets(50, 50);
 		
-		player1 = new Animation(spriteSheet1, "Gatomon", 1500, 1000, 200 , ground);
+		player1 = new Animation(spriteSheet1, "Gatomon", 30000, 1000, 200 , ground);
+		health1 = (int)(player1.getMaxHealthPoints()/100);
 		player1.play();
 		
-		player2 = new Animation(spriteSheet2, "Gabumon", 1500, 1000, 800, ground);
+		player2 = new Animation(spriteSheet2, "Gabumon", 30000, 1000, 800, ground);
+		health2 = (int)(player2.getMaxHealthPoints()/100);
 		player2.play();
 		
 		playerleft=player1.getPositionX();
@@ -293,7 +301,7 @@ public class AnimatedSprite{
 		g.fillRoundRect(8, 8, 300, 30, 30, 55);
 									
 		g.setColor(Color.GREEN);
-		g.fillRoundRect(8, 8, 300, 30, 30, 55);
+		g.fillRoundRect(8, 8, health1, 30, 30, 55);
 		
 		g.setColor(Color.WHITE);
 		g.drawRoundRect(8, 8, 300, 30, 30, 55);
@@ -303,7 +311,7 @@ public class AnimatedSprite{
 		g.fillRoundRect(692, 8, 300, 30, 30, 55); //1000-300-8 = 692
 		
 		g.setColor(Color.GREEN);
-		g.fillRoundRect(692, 8, 300, 30, 30, 55);
+		g.fillRoundRect(692, 8, health2, 30, 30, 55);
 		
 		g.setColor(Color.WHITE);
 		g.drawRoundRect(692, 8, 300, 30, 30, 55);
@@ -311,7 +319,7 @@ public class AnimatedSprite{
 		//energyBar1
 		
 		g.setColor(Color.WHITE);
-		g.fillRect(20, 48, 100, 20); // y = 8 + 30 + 10
+		g.fillRect(20, 48, energy1, 20); // y = 8 + 30 + 10
 		
 		g.setColor(Color.RED);
 		g.drawLine(70, 68, 70, 48);  //20+50
@@ -322,7 +330,7 @@ public class AnimatedSprite{
 		//energyBar2
 		
 		g.setColor(Color.WHITE);
-		g.fillRect(880, 48, 100, 20); // y = 8 + 30 + 10, x = 1000-20-100
+		g.fillRect(880, 48, energy2, 20); // y = 8 + 30 + 10, x = 1000-20-100
 		
 		g.setColor(Color.RED);
 		g.drawLine(930, 68, 930, 48);  //880+50
@@ -489,11 +497,13 @@ public class AnimatedSprite{
 			player1.move(0, 0);
 			player1.channelingEnergy();
 			player1.update(ENERGYCHANNEL);
+			energy1 = player1.getEnergyPoints()/5;
 		}
 		
 		if(player1.getIsMoveActive(LIGHTATTACK)&&player1.countOfActiveMoves()!=1){
 			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
 				player2.beingDamaged(player1.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
+				health2 = player2.getMaxHealthPoints()/100;
 			}
 			player1.move(0, 0);
 			player1.update(LIGHTATTACK);
@@ -596,14 +606,17 @@ public class AnimatedSprite{
 			player2.move(0, 0);
 			player2.channelingEnergy();
 			player2.update(ENERGYCHANNEL);
+			energy2 = (player2.getEnergyPoints()/5);
 		}
 		
 		if(player2.getIsMoveActive(LIGHTATTACK)&&player2.countOfActiveMoves()!=1){
 			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
 				player1.beingDamaged(player2.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
+				health1 = player1.getMaxHealthPoints()/100;
 			}
 			player2.move(0, 0);
 			player2.update(LIGHTATTACK);
+			
 		}
 		else if(player2.getIsMoveActive(HEAVYATTACK)&&player2.countOfActiveMoves()!=1){
 			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
@@ -951,7 +964,11 @@ public class AnimatedSprite{
 			if(keyCode!=lastKey){
 				player1.setFrame(0, TAUNT);
 				lastKeyPressed(keyCode);
-				player1.setEvolving(true);
+				if (player1.getEnergyPoints() > 250){
+					player1.setEvolving(true);
+					energy1 = 0;
+					player1.setEnergyPoints(0);
+				}
 				
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(TAUNT).getPosinsheet());
