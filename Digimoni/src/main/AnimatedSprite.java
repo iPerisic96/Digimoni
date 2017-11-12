@@ -85,9 +85,11 @@ public class AnimatedSprite{
 	private Point releasedStartingPoint;
 	private boolean isLightning=false;
 	private boolean isLightningReleased=false;
+	private boolean isLightningStormReleased=false;
 	private float newAlpha=1f;
 	private long newStartingTime;
-	private ArrayList<HashPoint> hashbrownies=new ArrayList<HashPoint>();
+	private ArrayList<HashPoint> hashbrownies = new ArrayList<HashPoint>();
+	private ArrayList<HashPoint> hashbrowniesStorm = new ArrayList<HashPoint>();
 	
 	private int ground = 782;
 	private float jump_speed1=3;
@@ -436,7 +438,30 @@ public class AnimatedSprite{
 			AlphaComposite alphaComposite2 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
 			g.setComposite(alphaComposite2);
 		}
-		
+		if(isLightningStormReleased){
+			AlphaComposite alphaComposite6 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,newAlpha);
+			g.setComposite(alphaComposite6);
+			Random random = new Random();
+			int gpx=random.nextInt(750);
+			Point groundPoint = new Point(gpx+150,ground);
+			System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"+releasedStartingPoint.getX()+releasedStartingPoint.getY());
+			lyne = new Lyne(releasedStartingPoint, groundPoint);
+			
+			if(hashbrownies.isEmpty()){
+				lyne.generateLightning(5);
+				hashbrownies=lyne.getHashPoints();
+				lyne.setHashPoints(hashbrownies);
+			}
+			
+			if(hashbrowniesStorm.isEmpty()){
+				lyne.generateLightningStorm(6, ground);
+				hashbrowniesStorm=lyne.getHashPoints();
+			}	
+			lyne.setHashPoints(hashbrowniesStorm);
+			lyne.drawLightning(g);
+			AlphaComposite alphaComposite7 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
+			g.setComposite(alphaComposite7);
+		}
 		
 		if(isGamePaused==true){
 			summonPausePics(g);
@@ -481,7 +506,6 @@ public class AnimatedSprite{
 			if(System.currentTimeMillis()-newStartingTime>500){
 				System.out.println("CURRENT TIMEXXX: "+(System.currentTimeMillis()-newStartingTime));
 				newAlpha-=0.015f;
-				System.out.println("jebem ti picku materinu neprovidnu zasto ne radis: "+newAlpha);
 			}
 			if(newAlpha<0){
 				isLightningReleased=false;
@@ -489,7 +513,18 @@ public class AnimatedSprite{
 				hashbrownies.clear();
 			}
 		}
-		
+		if(isLightningStormReleased==true){
+			if(System.currentTimeMillis()-newStartingTime>500){
+				System.out.println("CURRENT TIMEXXX: "+(System.currentTimeMillis()-newStartingTime));
+				newAlpha-=0.015f;
+			}
+			if(newAlpha<0){
+				isLightningStormReleased=false;
+				newAlpha=1f;
+				hashbrownies.clear();
+				hashbrowniesStorm.clear();
+			}
+		}
 		
 
 		if (fade){
@@ -888,11 +923,18 @@ public class AnimatedSprite{
 
 	
 	public void handleMouseUp(int x, int y, GFMouseButton button){
-		if(isLightningReleased==false){
+		if(isLightningReleased==false&&isLightningStormReleased==false&&button.compareTo(button.Left)==0){
 			PointerInfo aInfo2 = MouseInfo.getPointerInfo();
 			releasedStartingPoint = aInfo2.getLocation();
 			releasedStartingPoint = new Point((int)(releasedStartingPoint.getX()-OpeningScreen.nekako.getLocationOnScreen().getX()),(int)(releasedStartingPoint.getY()-OpeningScreen.nekako.getLocationOnScreen().getY()));			
 			isLightningReleased=true;
+			newStartingTime=System.currentTimeMillis();
+		}
+		else if(isLightningReleased==false&&isLightningStormReleased==false&&button.compareTo(button.Right)==0){
+			PointerInfo aInfo3 = MouseInfo.getPointerInfo();
+			releasedStartingPoint = aInfo3.getLocation();
+			releasedStartingPoint = new Point((int)(releasedStartingPoint.getX()-OpeningScreen.nekako.getLocationOnScreen().getX()),(int)(releasedStartingPoint.getY()-OpeningScreen.nekako.getLocationOnScreen().getY()));			
+			isLightningStormReleased=true;
 			newStartingTime=System.currentTimeMillis();
 		}
 
