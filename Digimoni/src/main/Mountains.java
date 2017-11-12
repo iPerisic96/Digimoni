@@ -75,43 +75,5 @@ public class Mountains{
 		return image;
 	}
 	
-	public BufferedImage brightness (BufferedImage imagen, int brightness){
-		
-		if(image == null){
-			System.out.println("Nema slike!"); 
-			return null; 
-		}
-		
-		WritableRaster source = image.getRaster();
-		WritableRaster target = Util.createRaster(source.getWidth(), source.getHeight(), false);
-		
-		int rgba[] = new int[4];
-		
-		for(int y = 0; y < source.getHeight(); y++)
-		{
-			for(int x = 0; x < source.getWidth(); x++)
-			{
-				source.getPixel(x, y, rgba);
-				
-				rgba[0] = saturate(rgba[0] - brightness);
-				rgba[1] = saturate(rgba[1] - brightness);
-				rgba[2] = saturate(rgba[2] - brightness);
-				target.setPixel(x, y, rgba);
-			}
-		}
 	
-		return Util.rasterToImage(target);
-	}
-
-		public static int clamp(int value, int min, int max)
-		{
-			if(value < min) return min;
-			if(value > max) return max;
-			return value;
-		}
-		
-		public static int saturate(int value)
-		{
-			return clamp(value, 0, 255);
-		}
 }
