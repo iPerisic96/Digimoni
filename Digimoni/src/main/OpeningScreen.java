@@ -18,6 +18,8 @@ public class OpeningScreen extends GameFrame
 	
 	private static final int MAX_SPRITES = 2;
 	private BufferedImage[] partImages = new BufferedImage[MAX_SPRITES];
+	
+	public static OpeningScreen nekako;
 
 	MenuButton start;
 	MenuButton controls;
@@ -46,8 +48,12 @@ public class OpeningScreen extends GameFrame
 	BufferedImage dubislika = Util.loadImage("tim/grafikadubi.jpg");
 	
 	Image andrej;
+	ImageAnimation andrejIA;
+	boolean ivanIAb=false;
 	Image ivan;
+	ImageAnimation ivanIA;
 	Image dubravka;
+	ImageAnimation dubravkaIA;
 	boolean ivanb=false;
 	
 
@@ -60,7 +66,7 @@ public class OpeningScreen extends GameFrame
 	float alphaFadeOut=1;
 	
 	
-	public static class Star
+	public static class Binarni
 	{
 		public float posX;
 		public float posY;
@@ -88,7 +94,7 @@ public class OpeningScreen extends GameFrame
 	
 	private static final int STAR_MAX = 1000;
 	
-	private Star[] stars = new Star[STAR_MAX];
+	private Binarni[] brojevi = new Binarni[STAR_MAX];
 	
 	private Color[] grayscale = new Color[256];
 	
@@ -102,6 +108,7 @@ public class OpeningScreen extends GameFrame
  
 		
 		super(title, sizeX, sizeY);
+		nekako=this;
 		setUpdateRate(60);
 		
 
@@ -129,19 +136,25 @@ public class OpeningScreen extends GameFrame
 		back = new MenuButton(100, 100, backh, backn);
 		
 		ivan = new Image(negativ(ivanslika), ivanslika, 80, 300, 250, 300);
+		ivanIA = new ImageAnimation(ivanslika, sizeX, sizeY, 80, 300);
+		ivan.ia = ivanIA;
 		dubravka = new Image(binary(dubislika), dubislika, 380, 300, 250, 300);
+		dubravkaIA = new ImageAnimation(dubislika, sizeX, sizeY, 380, 300);
+		dubravka.ia = dubravkaIA;
 		andrej = new Image(waves(andrejslika), andrejslika, 680, 300, 250, 300);
+		andrejIA = new ImageAnimation(andrejslika, sizeX, sizeY, 680, 300);
+		andrej.ia = andrejIA;
 		
 		for(int i = 0; i < STAR_MAX; ++i)
 		{
-			stars[i] = new Star();
-			stars[i].posX = (float)(Math.random() * 2000.0) - 1000.0f;
-			stars[i].posY = (float)(Math.random() * 2000.0) - 1000.0f;
-			stars[i].posZ = (float)(Math.random() * MAX_Z);
+			brojevi[i] = new Binarni();
+			brojevi[i].posX = (float)(Math.random() * 2000.0) - 1000.0f;
+			brojevi[i].posY = (float)(Math.random() * 2000.0) - 1000.0f;
+			brojevi[i].posZ = (float)(Math.random() * MAX_Z);
 			if (Math.random() < 0.5) {
-				stars[i].broj = "0";
+				brojevi[i].broj = "0";
 			} else {
-				stars[i].broj = "1";
+				brojevi[i].broj = "1";
 			}
 		}
 		
@@ -187,24 +200,22 @@ public class OpeningScreen extends GameFrame
 			}
 			
 		
-		for(Star s : stars)
+		for(Binarni b : brojevi)
 		{	
-			float sX1 = sw / 2 + s.posX * (400.0f / s.posZ);
-			float sY1 = sh / 2 + s.posY * (400.0f / s.posZ);
+			float sX1 = sw / 2 + b.posX * (400.0f / b.posZ);
+			float sY1 = sh / 2 + b.posY * (400.0f / b.posZ);
 			
-			//float sX2 = sw / 2 + s.posX * (400.0f / (s.posZ + speed));
-			//float sY2 = sh / 2 + s.posY * (400.0f / (s.posZ + speed));
 			
-			int brightness = (int)(255 - (s.posZ / MAX_Z) * 255.0f);
+			int brightness = (int)(255 - (b.posZ / MAX_Z) * 255.0f);
 			g.setColor(grayscale[brightness]);
 			
-			//g.drawLine((int)sX1, (int)sY1, (int)sX2, (int)sY2);
-			g.drawString(s.broj, sX1, sY1);
+			
+			g.drawString(b.broj, sX1, sY1);
 
 			
 		}
 		
-		
+		if (!backcredits){
 		AffineTransform transform = new AffineTransform();
 		
 		for(Particle p : parts)
@@ -222,6 +233,7 @@ public class OpeningScreen extends GameFrame
 			g.drawImage(partImages[p.imageID], transform, null);
 
 		}
+		}
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
                 1f));
 		//g.setColor(null);
@@ -236,6 +248,7 @@ public class OpeningScreen extends GameFrame
 			back.render(g, sw, sh);
 			andrej.render(g, sw, sh);
 			ivan.render(g, sw, sh);
+			
 			dubravka.render(g, sw, sh);
 		}
 		}else voz.render(g, sw, sh);
@@ -260,7 +273,7 @@ public class OpeningScreen extends GameFrame
 					fadeOut=true;
 				}
 			}
-		for(Star s : stars)
+		for(Binarni s : brojevi)
 		{
 			s.posZ -= speed;
 			if(s.posZ < 1.0)
@@ -299,6 +312,8 @@ public class OpeningScreen extends GameFrame
 		}else if(backcredits){
 			back.update(getMouseX(), getMouseY());
 			ivan.update(getMouseX(), getMouseY());
+
+			
 			dubravka.update(getMouseX(), getMouseY());
 			andrej.update(getMouseX(), getMouseY());
 		}
@@ -334,17 +349,7 @@ public class OpeningScreen extends GameFrame
 
 	public void handleMouseDown(int x, int y, GFMouseButton button) {
 		genEx(x, y, 10.0f, 300, 50);
-		/*GameFrame gFrame;
-		try {
-			gFrame = new AnimatedSprite("SpriteSheets/GatomonSpriteSheetCombined.png");
-			
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+	
 		
 	}
 	
@@ -381,6 +386,9 @@ public class OpeningScreen extends GameFrame
 			if(mouseOnButton(x, y, back)){
 				backcredits=false;
 			}
+			ivanIA.handleMouseUp(x, y, button);
+			dubravkaIA.handleMouseUp(x, y, button);
+			andrejIA.handleMouseUp(x, y, button);
 		}
 	}
 	
