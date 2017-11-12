@@ -20,6 +20,8 @@ public class OpeningScreen extends GameFrame
 	private BufferedImage[] partImages = new BufferedImage[MAX_SPRITES];
 	
 	public static OpeningScreen nekako;
+	
+	
 
 	MenuButton start;
 	MenuButton controls;
@@ -41,8 +43,8 @@ public class OpeningScreen extends GameFrame
 	BufferedImage exitn= Util.loadImage("dugmad/exit.png");
 	BufferedImage backn= Util.loadImage("dugmad/back.png");
 	
-	BufferedImage zekice = Util.loadImage("maxresdefault.jpg");
-	BufferedImage zekan = Util.loadImage("bunny.jpg");
+	BufferedImage controlsImage = Util.loadImage("controls.PNG");
+	
 	BufferedImage ivanslika = Util.loadImage("tim/grafikaivan.jpg");
 	BufferedImage andrejslika = Util.loadImage("tim/grafikaandrej.jpg");
 	BufferedImage dubislika = Util.loadImage("tim/grafikadubi.jpg");
@@ -58,6 +60,7 @@ public class OpeningScreen extends GameFrame
 	
 
 	boolean backcontrols=false;
+	boolean exitboolean = false;
 	
 	Fade voz;
 	static boolean binary;
@@ -92,9 +95,9 @@ public class OpeningScreen extends GameFrame
 	private Particle[] parts = new Particle[PARTICLE_MAX];
 
 	
-	private static final int STAR_MAX = 1000;
+	private static final int BINARNI_MAX = 1000;
 	
-	private Binarni[] brojevi = new Binarni[STAR_MAX];
+	private Binarni[] brojevi = new Binarni[BINARNI_MAX];
 	
 	private Color[] grayscale = new Color[256];
 	
@@ -103,12 +106,16 @@ public class OpeningScreen extends GameFrame
 	
 	
 
-	public OpeningScreen(String title, int sizeX, int sizeY)
-	{
- 
+	public OpeningScreen(String title, int sizeX, int sizeY){
 		
 		super(title, sizeX, sizeY);
+
 		nekako=this;
+
+		
+		
+		
+
 		setUpdateRate(60);
 		
 
@@ -145,7 +152,7 @@ public class OpeningScreen extends GameFrame
 		andrejIA = new ImageAnimation(andrejslika, sizeX, sizeY, 680, 300);
 		andrej.ia = andrejIA;
 		
-		for(int i = 0; i < STAR_MAX; ++i)
+		for(int i = 0; i < BINARNI_MAX; ++i)
 		{
 			brojevi[i] = new Binarni();
 			brojevi[i].posX = (float)(Math.random() * 2000.0) - 1000.0f;
@@ -243,7 +250,7 @@ public class OpeningScreen extends GameFrame
 			}
 		}else if(backcontrols){
 			back.render(g, sw, sh);
-			g.drawImage(zekice, 200, 200,500, 500, null);
+			g.drawImage(controlsImage, 50, 200,800, 500, null);
 		}else if(backcredits){
 			back.render(g, sw, sh);
 			andrej.render(g, sw, sh);
@@ -262,7 +269,6 @@ public class OpeningScreen extends GameFrame
 			animatedSprite.update(isKeyDown(KeyEvent.VK_H),isKeyDown(KeyEvent.VK_C),isKeyDown(KeyEvent.VK_V),isKeyDown(KeyEvent.VK_F),isKeyDown(KeyEvent.VK_G),isKeyDown(KeyEvent.VK_E),isKeyDown(KeyEvent.VK_L),isKeyDown(KeyEvent.VK_SLASH),isKeyDown(KeyEvent.VK_PERIOD),isKeyDown(KeyEvent.VK_QUOTE),isKeyDown(KeyEvent.VK_SEMICOLON),isKeyDown(KeyEvent.VK_CLOSE_BRACKET),isKeyDown(KeyEvent.VK_D),isKeyDown(KeyEvent.VK_A),isKeyDown(KeyEvent.VK_S),isKeyDown(KeyEvent.VK_W),isKeyDown(KeyEvent.VK_RIGHT), isKeyDown(KeyEvent.VK_LEFT), isKeyDown(KeyEvent.VK_DOWN), isKeyDown(KeyEvent.VK_UP), isKeyDown(KeyEvent.KEY_PRESSED));
 			return;
 		}
-		
 		
 		if(binary){
 			
@@ -390,6 +396,10 @@ public class OpeningScreen extends GameFrame
 			dubravkaIA.handleMouseUp(x, y, button);
 			andrejIA.handleMouseUp(x, y, button);
 		}
+		if(startb){
+			animatedSprite.handleMouseUp(x, y, button);
+		}
+		
 	}
 	
 	public int widthButton(MenuButton b){

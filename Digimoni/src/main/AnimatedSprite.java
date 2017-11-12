@@ -1,15 +1,21 @@
 package main;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.sun.media.jfxmedia.events.PlayerEvent;
-
+import rafgfxlib.GameFrame.GFMouseButton;
+import rafgfxlib.ImageViewer;
 import rafgfxlib.Util;
 
 
@@ -21,17 +27,38 @@ public class AnimatedSprite{
 	private SpriteSheet spriteSheet2;
 	private Animation player1;
 	private Animation player2;
-	private Color backgroundColor = new Color(92, 198, 237);//32,64,0
+	//private Color backgroundColor = new Color(92, 198, 237);//32,64,0
 	
+	private ArrayList<BufferedImage> clouds = new ArrayList<BufferedImage>();
+	
+	private BufferedImage background;
 	private BufferedImage cloud = null;
 	private BufferedImage village = null;
-	private ArrayList<BufferedImage> clouds = new ArrayList<BufferedImage>();
 	private BufferedImage platform = null;
 	private BufferedImage mountain = null;
-	private int countX = 0;
-	private int countW = 0;
-	private int counter = 0;
+	private BufferedImage mountain2;
+	private BufferedImage mountain3;
+	private BufferedImage mountain4;
 	
+	private BufferedImage zawarudo = null;
+	private BufferedImage[] cogwheels = new BufferedImage[5];
+	private int zawarudocount=0;
+	
+	private Mountains mountain0;
+	private Mountains mountain01;
+	private Mountains mountain02;
+	private Mountains mountain03;
+	
+	private int counter = 0;
+	private float alpha = 1;
+	private int countFlag = 0;
+	private WritableRaster raster;
+	private long realtime = System.currentTimeMillis();
+	private int pcountX = 0;
+	private int pcountY = 0;
+	private int anglecount=0;
+	private int anglebrojac=0;
+
 	private static final int IDLE = 0;
 	private static final int WALK = 1;
 	private static final int RUN = 2;
@@ -54,6 +81,17 @@ public class AnimatedSprite{
 	private long starttime1=-1;
 	private long starttime2=-1;
 	
+	private Lyne lyne;
+	private Point startingPoint;
+	private Point releasedStartingPoint;
+	private boolean isLightning=false;
+	private boolean isLightningReleased=false;
+	private boolean isLightningStormReleased=false;
+	private float newAlpha=1f;
+	private long newStartingTime;
+	private ArrayList<HashPoint> hashbrownies = new ArrayList<HashPoint>();
+	private ArrayList<HashPoint> hashbrowniesStorm = new ArrayList<HashPoint>();
+	
 	private int ground = 782;
 	private float jump_speed1=3;
 	private float jump_speed2=3;
@@ -66,12 +104,24 @@ public class AnimatedSprite{
 	
     private static int lastKey = -1;
 
-	
+    private StarField sf;
+    
+    private boolean fade;
+    
+    private int rgb [];
+
+    private boolean isGamePaused=false;
+    
+    private int energy1;
+    private int energy2;
+    
+    private int health1;
+    private int health2;
+    
 	public AnimatedSprite(String firstPlayerSpriteSheet, String secondPlayerSpriteSheet) throws NumberFormatException, IOException{
 		
-		//super("PrimerPozadine", 640, 480);
+		sf = new StarField(0, 0, 1000, 800, 1000);
 		
-		//setUpdateRate(60);
 		for (int i = 1; i < 8; i++){
 			cloud = Util.loadImage("clouds/Cloud" + i + ".png");
 			clouds.add(cloud);
@@ -79,7 +129,75 @@ public class AnimatedSprite{
 		
 		village = Util.loadImage("village.png");
 		platform = Util.loadImage("tile.png");
-		mountain = Util.loadImage("mountain.png");
+		
+	// background ----------------------------------------
+		raster = Util.createRaster(1000, 800, true);
+		
+		this.rgb = new int [4];
+		
+		int bottom [] = new int [3];
+		bottom[0] = 255;
+		bottom[1] = 255;
+		bottom[2] = 255;
+		
+		int top [] = new int [3];
+		top[0] = 92;
+		top[1] = 198;
+		top[2] = 237;
+		
+		for (int y = 0; y < raster.getHeight(); y++){
+			for (int x = 0; x < raster.getWidth(); x++){
+				double fy = y / (double)raster.getHeight();
+				
+				rgb[0] = lerp(top[0], bottom[0], fy);
+				rgb[1] = lerp(top[1], bottom[1], fy);
+				rgb[2] = lerp(top[2], bottom[2], fy);
+				setAlpha(255);
+				
+				raster.setPixel(x, y, rgb);
+				
+			}
+		}
+		background = Util.rasterToImage(raster);
+		
+	// mountains ------------------------------------------
+		
+		int levo [] = new int [3];
+		levo[0] = 199;
+		levo[1] = 225;
+		levo[2] = 31;
+		
+		int desno [] = new int [3];
+		desno[0] = 119;
+		desno[1] = 181;
+		desno[2] = 0;
+
+		mountain0 = new Mountains(1000, 800, 0.005, -2, 20, 700, levo, desno, 200.0);
+		mountain = mountain0.createMountain();
+		
+		mountain01 = new Mountains(1000, 800, 0.005, -2, 40, 650, levo, desno, 300.0);
+		mountain2 = mountain01.createMountain();
+		
+		levo[0] += 34;
+		levo[1] += 24;
+		levo[2] += 81;
+		
+		mountain02 = new Mountains(1000, 800, 0.006, 1, 40, 620, levo, desno, 400.0);
+		mountain3 = mountain02.createMountain();
+
+		levo[0] = 230;
+		levo[1] = 200;
+		levo[2] = 100;
+		
+		desno[0] = 255;
+		desno[1] = 255;
+		desno[2] = 255;
+		
+		
+		mountain03 = new Mountains(1000, 800, 0.02, 0, 40, 550, levo, desno, 400.0);
+		mountain4 = mountain03.createMountain();
+		
+	// ----------------------------------------------------
 		
 		spriteSheet1 = new SpriteSheet(firstPlayerSpriteSheet, 10, 30);
 		spriteSheet1.setOffsets(50, 50);
@@ -87,10 +205,12 @@ public class AnimatedSprite{
 		spriteSheet2 = new SpriteSheet(secondPlayerSpriteSheet, 10, 30);
 		spriteSheet2.setOffsets(50, 50);
 		
-		player1 = new Animation(spriteSheet1, "Gatomon", 1500, 1000, 200 , ground);
+		player1 = new Animation(spriteSheet1, "Gatomon", 30000, 1000, 200 , ground);
+		health1 = player1.getHealthPoints()/100;
 		player1.play();
 		
-		player2 = new Animation(spriteSheet2, "Gabumon", 1500, 1000, 800, ground);
+		player2 = new Animation(spriteSheet2, "Gabumon", 30000, 1000, 800, ground);
+		health2 = player2.getMaxHealthPoints()/100;
 		player2.play();
 		
 		playerleft=player1.getPositionX();
@@ -98,7 +218,18 @@ public class AnimatedSprite{
 		player1.setOrientation("LEFT");
 		player2.setOrientation("RIGHT");
 		
-		//startThread();
+		
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//	ZA WARUDO
+		
+		zawarudo = Util.loadImage("intropause/zawarudo.png"); 
+		for(int i=0;i<5;i++){
+			cogwheels[i]=Util.loadImage("intropause/"+i+".png");
+		}
+	}
+	
+	public int lerp (int a, int b, double x){
+		return (int)(a + (b - a) * x);
 	}
 
 	
@@ -116,66 +247,115 @@ public class AnimatedSprite{
 			lastKey=currentKey;
 		}
 	}
+
+	 NightSky ns = new NightSky();
+	 BufferedImage night = ns.create();
+	
+		
+		
+
 	 
 	public void render(Graphics2D g, int sw, int sh) throws NumberFormatException, IOException{
 		
-		g.setBackground(backgroundColor);
-		g.clearRect(0, 0, sw, sh);
-		
-		//clouds
-		countX += 1;
-		if (countX > 2250){
-			countX = 0;
+		if (counter == 2251){
+			countFlag = 1;
+		} else if (counter == 0){
+			countFlag = 0;
 		}
-		System.out.println(countX);
+
+		if (countFlag == 1 ){
+			
+			fade = false;
+			g.drawImage(night, 0, 0, null);
+			sf.draw(g);
 		
-		g.drawImage(clouds.get(0), sw - countX , 50, null);
-		g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - countX, clouds.get(1).getWidth()/2, null);
-		g.drawImage(clouds.get(2), sw + clouds.get(2).getWidth() + clouds.get(1).getWidth() - countX, 50, null);
-		g.drawImage(clouds.get(3), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() -countX, 50, null);
-		g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -countX, 50, null);
-		g.drawImage(clouds.get(1), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() + clouds.get(4).getWidth()  -countX, 50, null);
+			if (counter < 501){
+				fade = true;
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+				g.drawImage(background, 0, 0, null);;
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+				
+			}
+			
+			counter -=1;
 		
+		} else  {
+			fade = false;
+			System.out.println(counter);
+			g.clearRect(0, 0, sw, sh);
+			//g.drawImage(night, 0, 0, null);
+			//sf.draw(g);
+			g.drawImage(background, 0, 0, null);
+			
+			if (counter > 1749){
+				fade = true;
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+				g.drawImage(night, 0, 0, null);
+				sf.draw(g);
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f));
+				
+			}
+		
+			//clouds
+			g.drawImage(clouds.get(0), sw - counter , 50, null);
+			g.drawImage(clouds.get(1), sw + clouds.get(1).getWidth() - counter, clouds.get(1).getWidth()/2, null);
+			g.drawImage(clouds.get(2), sw + clouds.get(2).getWidth() + clouds.get(1).getWidth() - counter, 50, null);
+			g.drawImage(clouds.get(3), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() -counter, 50, null);
+			g.drawImage(clouds.get(4), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth()  -counter, 50, null);
+			g.drawImage(clouds.get(1), sw +clouds.get(2).getWidth()+ clouds.get(1).getWidth() + clouds.get(3).getWidth() + clouds.get(4).getWidth()  -counter, 50, null);
+			counter += 1;
+		}
 		//healthBar1
-		g.setColor(Color.GRAY);
-		g.fillRoundRect(8, 8, 300, 30, 30, 55);
 									
 		g.setColor(Color.GREEN);
-		g.fillRoundRect(8, 8, 300, 30, 30, 55);
+		g.fillRect(8, 8, 300, 30);
+		
+		g.setColor(Color.GRAY);
+		g.fillRect(8, 8, health1, 30);
 		
 		g.setColor(Color.WHITE);
-		g.drawRoundRect(8, 8, 300, 30, 30, 55);
+		g.drawRect(8, 8, 300, 30);
 						
 		//healthBar2
 		g.setColor(Color.GRAY);
-		g.fillRoundRect(692, 8, 300, 30, 30, 55); //1000-300-8 = 692
+		g.fillRect(692, 8, 300, 30); //1000-300-8 = 692
 		
 		g.setColor(Color.GREEN);
-		g.fillRoundRect(692, 8, 300, 30, 30, 55);
+		g.fillRect(692, 8, health2, 30);
 		
 		g.setColor(Color.WHITE);
-		g.drawRoundRect(692, 8, 300, 30, 30, 55);
+		g.drawRect(692, 8, 300, 30);
 		
 		//energyBar1
 		
 		g.setColor(Color.WHITE);
-		g.fillRect(20, 48, 100, 20); // y = 8 + 30 + 10
+		g.fillRect(8, 48, energy1, 20); // y = 8 + 30 + 10
+		
+		g.setColor(Color.RED);
+		g.drawLine(58, 68, 58, 48);  //20+50
 		
 		g.setColor(Color.GRAY);
-		g.drawRect(20, 48, 100, 20); // y = 8 + 30 + 10
+		g.drawRect(8, 48, 100, 20); // y = 8 + 30 + 10
 		
 		//energyBar2
 		
 		g.setColor(Color.WHITE);
-		g.fillRect(880, 48, 100, 20); // y = 8 + 30 + 10, x = 1000-20-100
+		g.fillRect(892, 48, energy2, 20); // y = 8 + 30 + 10, x = 1000-8-100
+		
+		g.setColor(Color.RED);
+		g.drawLine(942, 68, 942, 48);  //892+50
 
 		g.setColor(Color.GRAY);
-		g.drawRect(880, 48, 100, 20); // y = 8 + 30 + 10
+		g.drawRect(892, 48, 100, 20); // y = 8 + 30 + 10
 				
-				
+		
 		//mountains
+		g.drawImage(mountain4, 0, sh - mountain4.getHeight(), null);
+		g.drawImage(mountain3, 0, sh - mountain3.getHeight(), null);
+		g.drawImage(mountain2, 0, sh - mountain2.getHeight(), null);
 		for (int i = 0; i < 3; i++){
-			g.drawImage(mountain, i * mountain.getWidth() , sh - mountain.getHeight() - platform.getHeight(), null);
+			
+			g.drawImage(mountain, i * mountain.getWidth() , sh - mountain.getHeight(), null);
 		}
 		
 		//platform
@@ -189,7 +369,6 @@ public class AnimatedSprite{
 			g.drawImage(village, y*(village.getWidth()), sh-village.getHeight()-platform.getHeight(), null);
 		}
 		
-
 		if(playerright-playerleft>0){
 			if(player1.getOrientation()=="RIGHT"||player2.getOrientation()==""){
 				player1.switchOrientation();
@@ -232,16 +411,148 @@ public class AnimatedSprite{
 				player2.draw1(g);
 			}
 		}
-
+		
+		if(isLightning){
+			Random random = new Random();
+			int gpx=random.nextInt(750);
+			
+			Point groundPoint = new Point(gpx+150,ground);
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+startingPoint.getX()+startingPoint.getY());
+			lyne = new Lyne(startingPoint, groundPoint);
+			lyne.generateLightning(5);
+			lyne.drawLightning(g);
+		}
+		
+		if(isLightningReleased){
+			AlphaComposite alphaComposite1 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,newAlpha);
+			g.setComposite(alphaComposite1);
+			Random random = new Random();
+			int gpx=random.nextInt(750);
+			Point groundPoint = new Point(gpx+150,ground);
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+releasedStartingPoint.getX()+releasedStartingPoint.getY());
+			lyne = new Lyne(releasedStartingPoint, groundPoint);
+			lyne.generateLightning(5);
+			if(hashbrownies.isEmpty()){
+				hashbrownies=lyne.getHashPoints();
+			}
+			lyne.setHashPoints(hashbrownies);
+			lyne.drawLightning(g);
+			AlphaComposite alphaComposite2 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
+			g.setComposite(alphaComposite2);
+		}
+		if(isLightningStormReleased){
+			AlphaComposite alphaComposite6 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,newAlpha);
+			g.setComposite(alphaComposite6);
+			Random random = new Random();
+			int gpx=random.nextInt(750);
+			Point groundPoint = new Point(gpx+150,ground);
+			System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"+releasedStartingPoint.getX()+releasedStartingPoint.getY());
+			lyne = new Lyne(releasedStartingPoint, groundPoint);
+			
+			if(hashbrownies.isEmpty()){
+				lyne.generateLightning(5);
+				hashbrownies=lyne.getHashPoints();
+				lyne.setHashPoints(hashbrownies);
+			}
+			
+			if(hashbrowniesStorm.isEmpty()){
+				lyne.generateLightningStorm(6, ground);
+				hashbrowniesStorm=lyne.getHashPoints();
+			}	
+			lyne.setHashPoints(hashbrowniesStorm);
+			lyne.drawLightning(g);
+			AlphaComposite alphaComposite7 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
+			g.setComposite(alphaComposite7);
+		}
+		
+		if(isGamePaused==true){
+			summonPausePics(g);
+		}
+		
+		}
+	public void summonPausePics(Graphics2D g){
+		
+		pcountX+=3;
+		pcountY+=3;
+		anglecount+=5;
+		if(anglecount==360){
+			anglecount=0;
+		}
+		long razlika = System.currentTimeMillis()-realtime;
+		System.out.println("RAZLIKA: "+razlika);
+		float alpha = 0.9f;
+		AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,alpha);
+		g.setComposite(alphaComposite);
+		g.setColor(Color.darkGray);
+		g.fillRect(0, 0, 1000, 800);
+		//Random rotation, great for cogwheels
+		
+		if(anglebrojac==0&&pcountX<=zawarudo.getWidth()*2&&pcountY<=zawarudo.getHeight()*2){
+			g.rotate(Math.toRadians(anglecount), background.getWidth()/2, background.getHeight()/2);
+			g.drawImage(zawarudo,background.getWidth()/2+pcountX, background.getHeight()/2+pcountY,pcountX/2,pcountY/2,null );
+		}else anglebrojac++;
+		
+		if(pcountX>0)pcountX-=3;if(pcountY>0)pcountY-=3;
+		g.drawImage(zawarudo, pcountX, pcountY, zawarudo.getWidth(), zawarudo.getHeight(), null);
+		pcountX-=3;
+		pcountY-=3;
+		AlphaComposite alphaComposite1 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
+		g.setComposite(alphaComposite1);
+		
 	}
-	
 	
 	
 	public void update(boolean h, boolean c, boolean v, boolean f, boolean g, boolean e, boolean l, boolean la2, boolean ha2, boolean sa2, boolean ua2, boolean e2, boolean d, boolean a, boolean s, boolean w, boolean right, boolean left, boolean down, boolean up, boolean pressed) {	
 		
-		//Player1
+		if(isLightningReleased==true){
+			if(System.currentTimeMillis()-newStartingTime>500){
+				System.out.println("CURRENT TIMEXXX: "+(System.currentTimeMillis()-newStartingTime));
+				newAlpha-=0.015f;
+			}
+			if(newAlpha<0){
+				isLightningReleased=false;
+				newAlpha=1f;
+				hashbrownies.clear();
+			}
+		}
+		if(isLightningStormReleased==true){
+			if(System.currentTimeMillis()-newStartingTime>500){
+				System.out.println("CURRENT TIMEXXX: "+(System.currentTimeMillis()-newStartingTime));
+				newAlpha-=0.015f;
+			}
+			if(newAlpha<0){
+				isLightningStormReleased=false;
+				newAlpha=1f;
+				hashbrownies.clear();
+				hashbrowniesStorm.clear();
+			}
+		}
 		
-		if(d){
+
+		if (fade){
+			if (countFlag == 0){
+			alpha = Math.abs(1750-counter)/500f;
+			System.out.println("Alpha : " + counter);
+			}
+			else {
+				alpha = (500-counter)/500f;
+			}
+		}
+		else {
+			alpha = 0;
+		}
+		
+		sf.update();
+
+		//Player1
+		if(!player1.isDead()&&!player2.isDead()&&!isGamePaused){
+		if(player1.isEvolving()==false&&player1.countOfActiveMoves()==1){
+			player1.move(0,0);
+			player1.update(IDLE);
+		}
+		
+		else if(d){
+
 			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
 				player1.update(RUN);
 
@@ -261,103 +572,280 @@ public class AnimatedSprite{
 			player1.move(0, 0);
 			player1.update(GUARD);
 		}
-		if(w){
-			//NEEDS FIXING
+		else if(h){
+			player1.move(0, 0);
+			player1.channelingEnergy();
+			player1.update(ENERGYCHANNEL);
+			energy1 = player1.getEnergyPoints()/5;
+		}
+		
+		if(player1.getIsMoveActive(LIGHTATTACK)&&player1.countOfActiveMoves()!=1){
+			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
+				health2 = player2.getMaxHealthPoints()/100;
+			}
+			player1.move(0, 0);
+			player1.update(LIGHTATTACK);
+		}
+		else if(player1.getIsMoveActive(HEAVYATTACK)&&player1.countOfActiveMoves()!=1){
+			if(player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(HEAVYATTACK).getMovedmg());
+			}
+			player1.move(0, 0);
+			player1.update(HEAVYATTACK);
+		}
+		else if(player1.getIsMoveActive(SPECIAL)&&player1.countOfActiveMoves()!=1){
+			if(player1.getEnergyPoints()>=250&&player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(SPECIAL).getMovedmg());
+			}
+			player1.move(0, 0);
+			player1.update(SPECIAL);
+		}
+		else if(player1.getIsMoveActive(ULTIMATE)&&player1.countOfActiveMoves()!=1){
+			if(player1.getEnergyPoints()==player1.getMaxEnergyPoints()&&player1.isCollisionDetected(player1.getPositionX(), player2.getPositionX(), player1.getPositionY(), player2.getPositionY(),1)){
+				player2.beingDamaged(player1.getSpriteMoves().get(ULTIMATE).getMovedmg());
+			}
+			player1.move(0, 0);
+			player1.update(ULTIMATE);
+		}
+		else if(player1.getIsMoveActive(TAUNT)&&player1.countOfActiveMoves()!=1){
+			player1.move(0, 0);
+			player1.update(TAUNT);
 			
-			if(player1.isJumping()){
-				player1.setOnGround(false);
-				jump_speed1-=gravity;
-				if(jump_speed1<0){
-					jump_speed1=0;
-					player1.setFalling(true);
-					player1.setJumping(false);
-					player1.move(0, 0);
-					System.out.println("JMP SPEED: "+jump_speed1);
-					player1.update(JUMP);
-				}else{
-					if(w&&d){
+		}
+		if(player1.isFalling()||player1.isJumping()){
+			player1.setVelY(player1.getVelY() + gravity);
+			if(player1.getVelY()>PLAYER_SPEED){
+				player1.setVelY(PLAYER_SPEED);
+			}
+		}
+		if(player1.getPositionY()>ground){
+			player1.setPosition(player1.getPositionX(), ground);
+			player1.setVelY(0);
+			player1.setJumping(false);
+			player1.setFalling(false);
+			player1.setAnimation(player1.getSpriteMoves().get(IDLE).getPosinsheet());
+			player1.play();		}
+		else{
+			player1.setFalling(true);
+		}
+		}else if(player1.isDead()){
+			if(player1.getDeathCounter()<0){
+				player1.stop();
+				player1.setAnimation(player1.getSpriteMoves().get(LOSE).getPosinsheet());
+				player1.play();
+				player1.setIsMoveActive(true, LOSE);
+			}
+			player1.setDeathCounter(player1.getDeathCounter()+1);
+			if(player1.getDeathCounter()>player1.getSpriteMoves().get(LOSE).getLengthofmove())player1.setDeathCounter(-1);
+			player1.update(LOSE);
+			
+		}else if(!player1.isDead()){
+			if(player1.getDeathCounter()<0){
+				player1.stop();
+				player1.setAnimation(player1.getSpriteMoves().get(WIN).getPosinsheet());
+				player1.play();
+				player1.setIsMoveActive(true, WIN);
+			}
+			player1.setDeathCounter(player1.getDeathCounter()+1);
+			if(player1.getDeathCounter()>player1.getSpriteMoves().get(WIN).getLengthofmove())player1.setDeathCounter(-1);
+			player1.update(WIN);
+		}
+		System.out.println("COUNTISNOW: "+player1.countOfActiveMoves());
+		
+		//Player 2
+		
+		if(!player1.isDead()&&!player2.isDead()&&!isGamePaused){
+		if(player2.isEvolving()==false&&player2.countOfActiveMoves()==1){
+			player2.move(0,0);
+			player2.update(IDLE);
+		}
+		
+		else if(right){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player2.update(RUN);
 
-						player1.move(0, -jump_speed1);
-						System.out.println("JMPMOVRIGHT SPEED: "+jump_speed1);
-						player1.update(JUMP);}
-					else{
-					player1.move(0, -jump_speed1);
-					System.out.println("JMP SPEED: "+jump_speed1);
-					player1.update(JUMP);}
-				}if(w&&a){
+			}
+			else{
+				player2.move(PLAYER_SPEED, 0);
+				player2.update(RUN);
+			}
+			
+		}
+		else if(left){
+			
+			player2.move(-PLAYER_SPEED, 0);
+			player2.update(WALK);
+		}
+		else if(down){
+			player2.move(0, 0);
+			player2.update(GUARD);
+		}
+		else if(l){
+			player2.move(0, 0);
+			player2.channelingEnergy();
+			player2.update(ENERGYCHANNEL);
+			energy2 = (player2.getEnergyPoints()/5);
+		}
+		
+		if(player2.getIsMoveActive(LIGHTATTACK)&&player2.countOfActiveMoves()!=1){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player1.beingDamaged(player2.getSpriteMoves().get(LIGHTATTACK).getMovedmg());
+				health1 = player1.getHealthPoints()/100;
+			}
+			player2.move(0, 0);
+			player2.update(LIGHTATTACK);
+			
+		}
+		else if(player2.getIsMoveActive(HEAVYATTACK)&&player2.countOfActiveMoves()!=1){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player1.beingDamaged(player2.getSpriteMoves().get(HEAVYATTACK).getMovedmg());
+			}
+			player2.move(0, 0);
+			player2.update(HEAVYATTACK);
+		}
+		else if(player2.getIsMoveActive(SPECIAL)&&player2.countOfActiveMoves()!=1){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player1.beingDamaged(player2.getSpriteMoves().get(SPECIAL).getMovedmg());
+			}
+			player2.move(0, 0);
+			player2.update(SPECIAL);
+		}
+		else if(player2.getIsMoveActive(ULTIMATE)&&player2.countOfActiveMoves()!=1){
+			if(player2.isCollisionDetected(player2.getPositionX(), player1.getPositionX(), player2.getPositionY(), player1.getPositionY(),1)){
+				player1.beingDamaged(player2.getSpriteMoves().get(ULTIMATE).getMovedmg());
+			}
+			player2.move(0, 0);
+			player2.update(ULTIMATE);
+		}
+		else if(player2.getIsMoveActive(TAUNT)&&player2.countOfActiveMoves()!=1){
+			player2.move(0, 0);
+			player2.update(TAUNT);
+			
+		}
+		if(player2.isFalling()||player2.isJumping()){
+			player2.setVelY(player2.getVelY() + gravity);
+			if(player2.getVelY()>PLAYER_SPEED){
+				player2.setVelY(PLAYER_SPEED);
+			}
+		}
+		if(player2.getPositionY()>ground){
+			player2.setPosition(player2.getPositionX(), ground);
+			player2.setVelY(0);
+			player2.setJumping(false);
+			player2.setFalling(false);
+			player2.setAnimation(player2.getSpriteMoves().get(IDLE).getPosinsheet());
+			player2.play();
+		}
+		else{
+			player2.setFalling(true);
+		}
+		}else if(player2.isDead()){
+			if(player2.getDeathCounter()<0){
+				player2.stop();
+				player2.setAnimation(player2.getSpriteMoves().get(LOSE).getPosinsheet());
+				player2.play();
+				player2.setIsMoveActive(true, LOSE);
+			}
+			player2.setDeathCounter(player2.getDeathCounter()+1);
+			if(player2.getDeathCounter()>player2.getSpriteMoves().get(LOSE).getLengthofmove())player2.setDeathCounter(-1);
+			player2.update(LOSE);
+		}else if(!player2.isDead()){
+			player1.setDeathCounter(player1.getDeathCounter()+1);
+			if(player2.getDeathCounter()<0){
+				player2.stop();
+				player2.setAnimation(player2.getSpriteMoves().get(WIN).getPosinsheet());
+				player2.play();
+				player2.setIsMoveActive(true, WIN);
+			}
+			player2.setDeathCounter(player2.getDeathCounter()+1);
+			if(player2.getDeathCounter()>player2.getSpriteMoves().get(WIN).getLengthofmove())player2.setDeathCounter(-1);
+			player2.update(WIN);
+			
+		}
+		
+		playerleft=player1.getPositionX();
+		playerright=player2.getPositionX();
+		
+		
+		/*if(player1.isJumping()&&player1.getIsMoveActive(JUMP)){
+			player1.setOnGround(false);
+			jump_speed1-=gravity;
+			if(jump_speed1<0){
+				jump_speed1=0;
+				player1.setFalling(true);
+				player1.setJumping(false);
+				player1.move(0, 0);
+				System.out.println("JMP SPEED: "+jump_speed1);
+				player1.update(JUMP);
+			}else{
+				if(w&&d){
 
 					player1.move(0, -jump_speed1);
-					System.out.println("JMPMOVLEFT SPEED: "+jump_speed1);
+					System.out.println("JMPMOVRIGHT SPEED: "+jump_speed1);
 					player1.update(JUMP);}
 				else{
 				player1.move(0, -jump_speed1);
 				System.out.println("JMP SPEED: "+jump_speed1);
 				player1.update(JUMP);}
-			
-			}else if(player1.isFalling()){
-				jump_speed1+=gravity;
-				if(jump_speed1>PLAYER_SPEED&&player1.getPositionY()>ground){
-					player1.setPosition(player1.getPositionX(), ground);
-					jump_speed1=PLAYER_SPEED;
-					player1.setFalling(false);
-					player1.setJumping(true);
-					player1.move(0, 0);
-					System.out.println("FALL SPEED: "+jump_speed1);
-					player1.update(JUMP);
-					
-				}else{
-					if(w&&d){
+			}if(w&&a){
 
-						player1.move(0, jump_speed1);
-						System.out.println("FALLMOVRIGHT SPEED: "+jump_speed1);
-						player1.update(JUMP);
-					}else{
-					player1.move(0, jump_speed1);
-					System.out.println("FALL SPEED: "+jump_speed1);
-					player1.update(JUMP);}
-				}
-				if(w&&a){
+				player1.move(0, -jump_speed1);
+				System.out.println("JMPMOVLEFT SPEED: "+jump_speed1);
+				player1.update(JUMP);}
+			else{
+			player1.move(0, -jump_speed1);
+			System.out.println("JMP SPEED: "+jump_speed1);
+			player1.update(JUMP);}
+		
+		}
+		if(player1.isFalling()){
+			System.out.println("USLISMOOoooooooooooooooooooooooooooooooooooooooooooooooooooooooooO");
+			jump_speed1+=gravity;
+			if(jump_speed1>PLAYER_SPEED&&player1.getPositionY()>ground){
+				player1.setPosition(player1.getPositionX(), ground);
+				jump_speed1=PLAYER_SPEED;
+				player1.setFalling(false);
+				player1.setJumping(true);
+				player1.move(0, 0);
+				System.out.println("FALL SPEED: "+jump_speed1);
+				player1.update(JUMP);
+				
+			}else{
+				if(w&&d){
 
 					player1.move(0, jump_speed1);
-					System.out.println("FALLMOVLEFT SPEED: "+jump_speed1);
+					System.out.println("FALLMOVRIGHT SPEED: "+jump_speed1);
 					player1.update(JUMP);
 				}else{
-					player1.move(0, jump_speed1);
-					System.out.println("FALL SPEED: "+jump_speed1);
-					player1.update(JUMP);}
-				}
+				player1.move(0, jump_speed1);
+				System.out.println("FALL SPEED: "+jump_speed1);
+				player1.update(JUMP);}
+			}
+			if(w&&a){
+
+				player1.move(0, jump_speed1);
+				System.out.println("FALLMOVLEFT SPEED: "+jump_speed1);
+				player1.update(JUMP);
+			}else{
+				player1.move(0, jump_speed1);
+				System.out.println("FALL SPEED: "+jump_speed1);
+				player1.update(JUMP);}
+			}
+		 
+		/*
+		
+		if(w){
+			//NEEDS FIXING
 			
 			
-		}
-		else if(h){
-			player1.move(0, 0);
-			player1.update(ENERGYCHANNEL);
-		}
-		else if(c){
-			player1.move(0, 0);
-			player1.update(LIGHTATTACK);
-		}
-		else if(v){
-			player1.move(0, 0);
-			player1.update(HEAVYATTACK);
-		}
-		else if(f){
-			player1.move(0, 0);
-			player1.update(SPECIAL);
-		}
-		else if(g){
-			player1.move(0, 0);
-			player1.update(ULTIMATE);
-		}
+		
 		else if(e){
 			player1.move(0, 0);
 			player1.update(TAUNT);
 			
 		}
-		else if(pressed==false&&player1.isEvolving()==false){
-			player1.move(0,0);
-			player1.update(IDLE);
-		}
+	
 		
 
 		//Player2
@@ -424,27 +912,53 @@ public class AnimatedSprite{
 			player2.move(0,0);
 			player2.update(IDLE);
 		}
+
+		*/
+
+
+	}
+	
+
+	public void handleMouseDown(int x, int y, GFMouseButton button){
 		
-		playerleft=player1.getPositionX();
-		playerright=player2.getPositionX();
 	}
 
-	/*@Override
-	public void handleMouseDown(int x, int y, GFMouseButton button) { }
+	
+	public void handleMouseUp(int x, int y, GFMouseButton button){
+		if(isLightningReleased==false&&isLightningStormReleased==false&&button.compareTo(button.Left)==0){
+			PointerInfo aInfo2 = MouseInfo.getPointerInfo();
+			releasedStartingPoint = aInfo2.getLocation();
+			releasedStartingPoint = new Point((int)(releasedStartingPoint.getX()-OpeningScreen.nekako.getLocationOnScreen().getX()),(int)(releasedStartingPoint.getY()-OpeningScreen.nekako.getLocationOnScreen().getY()));			
+			isLightningReleased=true;
+			newStartingTime=System.currentTimeMillis();
+		}
+		else if(isLightningReleased==false&&isLightningStormReleased==false&&button.compareTo(button.Right)==0){
+			PointerInfo aInfo3 = MouseInfo.getPointerInfo();
+			releasedStartingPoint = aInfo3.getLocation();
+			releasedStartingPoint = new Point((int)(releasedStartingPoint.getX()-OpeningScreen.nekako.getLocationOnScreen().getX()),(int)(releasedStartingPoint.getY()-OpeningScreen.nekako.getLocationOnScreen().getY()));			
+			isLightningStormReleased=true;
+			newStartingTime=System.currentTimeMillis();
+		}
 
-	@Override
-	public void handleMouseUp(int x, int y, GFMouseButton button) { }
+	}
 
-	@Override
+	
 	public void handleMouseMove(int x, int y) { }
 
-*/
+
 	//@Override
 	public void handleKeyDown(int keyCode) 
 	{ 
-		
-		//Player1
-		
+		if(keyCode==KeyEvent.VK_SPACE){
+			PointerInfo aInfo = MouseInfo.getPointerInfo();
+			startingPoint = aInfo.getLocation();
+			
+			startingPoint = new Point((int)(startingPoint.getX()-OpeningScreen.nekako.getLocationOnScreen().getX()),(int)(startingPoint.getY()-OpeningScreen.nekako.getLocationOnScreen().getY()));			
+			System.out.println("MIS X: "+startingPoint.getX()+" MIS Y: "+startingPoint.getY()); 
+			isLightning=true;
+		}
+		//Player1		
+		if(!player1.isDead()&&!player2.isDead()&&!isGamePaused){
 		if(keyCode == KeyEvent.VK_W){
 			if(keyCode!=lastKey){
 				player1.setFrame(0, JUMP);
@@ -452,6 +966,9 @@ public class AnimatedSprite{
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(JUMP).getPosinsheet());
 			player1.play();
+			player1.setVelY(-3);
+			player1.setJumping(true);
+
 
 		}
 		else if(keyCode == KeyEvent.VK_D){
@@ -461,6 +978,7 @@ public class AnimatedSprite{
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(RUN).getPosinsheet());
 			player1.play();
+			player1.setIsMoveActive(true,RUN);
 
 		}
 		else if(keyCode == KeyEvent.VK_A){
@@ -470,6 +988,8 @@ public class AnimatedSprite{
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(WALK).getPosinsheet());
 			player1.play();
+			player1.setIsMoveActive(true,WALK);
+
 
 		}
 		else if(keyCode == KeyEvent.VK_S){
@@ -478,7 +998,10 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(GUARD).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,GUARD);
+
+
 		}
 		else if(keyCode == KeyEvent.VK_H){
 			if(keyCode!=lastKey){
@@ -486,7 +1009,10 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(ENERGYCHANNEL).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,ENERGYCHANNEL);
+
+
 		}
 		else if(keyCode == KeyEvent.VK_C){
 			if(keyCode!=lastKey){
@@ -494,7 +1020,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(LIGHTATTACK).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,LIGHTATTACK);
+
 		}
 		else if(keyCode == KeyEvent.VK_V){
 			if(keyCode!=lastKey){
@@ -502,7 +1030,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(HEAVYATTACK).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,HEAVYATTACK);
+
 		}
 		else if(keyCode == KeyEvent.VK_F){
 			if(keyCode!=lastKey){
@@ -510,23 +1040,35 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(SPECIAL).getPosinsheet());
-			player1.play();		
+			player1.play();
+			player1.setIsMoveActive(true,SPECIAL);
+
 		}
 		else if(keyCode == KeyEvent.VK_G){
 			if(keyCode!=lastKey){
 				player1.setFrame(0, ULTIMATE);
 				lastKeyPressed(keyCode);
+
 			}
 			player1.setAnimation(player1.getSpriteMoves().get(ULTIMATE).getPosinsheet());
-			player1.play();		
+			player1.play();	
+			player1.setIsMoveActive(true,ULTIMATE);
+
 		}
 		else if(keyCode == KeyEvent.VK_E){
 			if(keyCode!=lastKey){
 				player1.setFrame(0, TAUNT);
 				lastKeyPressed(keyCode);
+				if (player1.getEnergyPoints() > 250){
+					player1.setEvolving(true);
+					energy1 = 0;
+					player1.setEnergyPoints(0);
+				}
+				
 			}
-			//player1.setAnimation(player1.getSpriteMoves().get(GUARD).getPosinsheet());
-			//player1.play();
+			player1.setAnimation(player1.getSpriteMoves().get(TAUNT).getPosinsheet());
+			player1.play();
+			player1.setIsMoveActive(true, TAUNT);
 			System.out.println("Evoluiram prvi.");
 		}
 		
@@ -543,7 +1085,8 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(JUMP).getPosinsheet());
 			player2.play();
-
+			player2.setVelY(-3);
+			player2.setJumping(true);
 		}
 		else if(keyCode == KeyEvent.VK_RIGHT){
 			if(keyCode!=lastKey){
@@ -552,6 +1095,7 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(WALK).getPosinsheet());
 			player2.play();
+			player2.setIsMoveActive(true, WALK);
 
 		}
 		else if(keyCode == KeyEvent.VK_LEFT){
@@ -561,6 +1105,8 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(RUN).getPosinsheet());
 			player2.play();
+			player2.setIsMoveActive(true, RUN);
+
 
 		}
 		else if(keyCode == KeyEvent.VK_DOWN){
@@ -570,6 +1116,7 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(GUARD).getPosinsheet());
 			player2.play();		
+			player2.setIsMoveActive(true, GUARD);
 
 
 		}
@@ -580,6 +1127,8 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(ENERGYCHANNEL).getPosinsheet());
 			player2.play();
+			player2.setIsMoveActive(true, ENERGYCHANNEL);
+
 		}
 		else if(keyCode == KeyEvent.VK_SLASH){
 			if(keyCode!=lastKey){
@@ -587,7 +1136,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(LIGHTATTACK).getPosinsheet());
-			player2.play();		
+			player2.play();
+			player2.setIsMoveActive(true, LIGHTATTACK);
+
 		}
 		else if(keyCode == KeyEvent.VK_PERIOD){
 			if(keyCode!=lastKey){
@@ -595,7 +1146,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(HEAVYATTACK).getPosinsheet());
-			player2.play();		
+			player2.play();	
+			player2.setIsMoveActive(true, HEAVYATTACK);
+	
 		}
 		else if(keyCode == KeyEvent.VK_QUOTE){
 			if(keyCode!=lastKey){
@@ -603,7 +1156,9 @@ public class AnimatedSprite{
 				lastKeyPressed(keyCode);
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(SPECIAL).getPosinsheet());
-			player2.play();		
+			player2.play();	
+			player2.setIsMoveActive(true, SPECIAL);
+
 		}
 		else if(keyCode == KeyEvent.VK_SEMICOLON){
 			if(keyCode!=lastKey){
@@ -612,24 +1167,82 @@ public class AnimatedSprite{
 			}
 			player2.setAnimation(player2.getSpriteMoves().get(ULTIMATE).getPosinsheet());
 			player2.play();		
+			player2.setIsMoveActive(true, ULTIMATE);
+
 		}
 		else if(keyCode == KeyEvent.VK_CLOSE_BRACKET){
 			if(keyCode!=lastKey){
 				player2.setFrame(0, TAUNT);
 				lastKeyPressed(keyCode);
+				player2.setEvolving(true);
 			}
 			//player2.setAnimation(player2.getSpriteMoves().get(GUARD).getPosinsheet());
 			//player2.play();
+			player2.setIsMoveActive(true, TAUNT);
+
 			System.out.println("Evoluiram drugi.");
 		}
 		
-		
+
+		}
+		if(keyCode == KeyEvent.VK_ESCAPE){
+			System.exit(1);
+		}
+		if(keyCode==KeyEvent.VK_P){
+			if(isGamePaused==false){
+				isGamePaused=true;
+				realtime=System.currentTimeMillis();
+				zawarudocount=1;
+				pcountX=0;
+				pcountY=0;
+				anglebrojac=0;
+			}
+			else{
+				isGamePaused=false;
+				zawarudocount=0;
+			}
+		}
 	}
 	
 	//@Override
-	public void handleKeyUp(int keyCode) 
-	{ 
+	public void handleKeyUp(int keyCode) { 
 		//Player1
+		if(keyCode==KeyEvent.VK_SPACE){
+			isLightning=false;
+		}
+		if(!isGamePaused){
+			if(keyCode==KeyEvent.VK_D||keyCode==KeyEvent.VK_S||keyCode==KeyEvent.VK_A||keyCode==KeyEvent.VK_H){
+			player1.setIsMoveActive(false, WALK);
+			player1.setIsMoveActive(false, RUN);
+			player1.setIsMoveActive(false, GUARD);
+			player1.setIsMoveActive(false, ENERGYCHANNEL);
+		}
+		if(player1.countOfActiveMoves()==1){
+			lastKey=-1;
+			player1.stop();
+			player1.setAnimation(player1.getSpriteMoves().get(IDLE).getPosinsheet());
+			player1.play();
+			player1.setFrame(0,IDLE);
+		}
+		if(keyCode==KeyEvent.VK_RIGHT||keyCode==KeyEvent.VK_DOWN||keyCode==KeyEvent.VK_LEFT||keyCode==KeyEvent.VK_L){
+			player2.setIsMoveActive(false, WALK);
+			player2.setIsMoveActive(false, RUN);
+			player2.setIsMoveActive(false, GUARD);
+			player2.setIsMoveActive(false, ENERGYCHANNEL);
+		}
+		if(player2.countOfActiveMoves()==1){
+			lastKey=-1;
+			player2.stop();
+			player2.setAnimation(player2.getSpriteMoves().get(IDLE).getPosinsheet());
+			player2.play();
+			player2.setFrame(0,IDLE);
+		}	
+	}
+		
+		
+		
+		/*
+		
 		if(player1.isEvolving()==false){
 		if(keyCode==KeyEvent.VK_W){
 			int br=0;
@@ -661,8 +1274,7 @@ public class AnimatedSprite{
 			player1.setFrame(0,IDLE);
 		}
 	else if(keyCode == KeyEvent.VK_S || 
-				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_E||/*keyCode == KeyEvent.VK_W ||*/ keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G
-				)
+				keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_E||/*keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_H || keyCode == KeyEvent.VK_C || keyCode == KeyEvent.VK_V || keyCode == KeyEvent.VK_F || keyCode == KeyEvent.VK_G)
 		{
 			if(keyCode == KeyEvent.VK_E){player1.setEvolving(true);System.out.println("EVOLUIRAM UPRAVO!1");}
 			lastKey=-1;
@@ -685,5 +1297,16 @@ public class AnimatedSprite{
 			player2.play();
 			player2.setFrame(0,IDLE);
 		}
+	*/
 	}
+
+	public int[] getRgb() {
+		return rgb;
+	}
+
+	public void setAlpha(int num) {
+		this.rgb[3] = num;
+	}
+	
+	
 }
