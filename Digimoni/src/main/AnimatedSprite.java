@@ -306,7 +306,6 @@ public class AnimatedSprite{
 		g.fillRect(8, 8, health1, 30);
 		
 		g.setColor(Color.WHITE);
-		g.drawRoundRect(8, 8, 300, 30, 30, 55);
 		g.drawRect(8, 8, 300, 30);
 						
 		//healthBar2
