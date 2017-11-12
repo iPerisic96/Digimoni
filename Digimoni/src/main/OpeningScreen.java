@@ -18,7 +18,9 @@ public class OpeningScreen extends GameFrame
 	
 	private static final int MAX_SPRITES = 2;
 	private BufferedImage[] partImages = new BufferedImage[MAX_SPRITES];
-
+	
+	public static OpeningScreen nekako;
+	
 	MenuButton start;
 	MenuButton controls;
 	MenuButton credits;
@@ -97,11 +99,12 @@ public class OpeningScreen extends GameFrame
 	
 	
 
-	public OpeningScreen(String title, int sizeX, int sizeY)
-	{
- 
+	public OpeningScreen(String title, int sizeX, int sizeY){
 		
 		super(title, sizeX, sizeY);
+		
+		nekako=this;
+		
 		setUpdateRate(60);
 		
 
@@ -380,6 +383,9 @@ public class OpeningScreen extends GameFrame
 			if(mouseOnButton(x, y, back)){
 				backcredits=false;
 			}
+		}
+		if(startb){
+			animatedSprite.handleMouseUp(x, y, button);
 		}
 	}
 	

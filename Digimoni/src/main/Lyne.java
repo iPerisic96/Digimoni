@@ -16,13 +16,14 @@ public class Lyne {
 	Random random;
 	ArrayList<HashPoint> hashPoints;
 	
+	
 	public Lyne(Point origin, Point endpoint){
 		random=new Random();
 		hashPoints=new ArrayList<HashPoint>();
 		hashPoints.add(new HashPoint(origin, endpoint));
 	}
 	
-	public void generateLightning(Graphics2D graphics2d, int generations){
+	public void generateLightning(int generations){
 		for(int t=0;t<generations;t++){
 			int velicina=hashPoints.size();
 			for(int i=0;i<velicina;i++){
@@ -40,10 +41,12 @@ public class Lyne {
 				hashPoints.add(new HashPoint(A, S));
 				hashPoints.add(new HashPoint(S, B));
 			}
+		
 		}
+	}
+	
+	public void drawLightning(Graphics2D graphics2d){
 
-			AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f);
-			graphics2d.setComposite(alphaComposite);
 			Color color;
 			for(int z=0;z<hashPoints.size();z++){
 				color =new Color(215, 172, 230);
@@ -56,6 +59,15 @@ public class Lyne {
 				graphics2d.setStroke(new BasicStroke(2));
 				graphics2d.drawLine((int)hashPoints.get(z).end.getX(), (int)hashPoints.get(z).end.getY(), (int)hashPoints.get(z).start.getX(), (int)hashPoints.get(z).start.getY());
 
-			}
+		}
 	}
+	
+	public ArrayList<HashPoint> getHashPoints() {
+		return hashPoints;
+	}
+
+	public void setHashPoints(ArrayList<HashPoint> hashPoints) {
+		this.hashPoints = hashPoints;
+	}
+
 }
